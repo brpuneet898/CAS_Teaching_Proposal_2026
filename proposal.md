@@ -171,13 +171,13 @@ The synthetic data will be generated from a documented process stored in the ins
 
 The frequency component will follow a structure such as:
 
-\[
+$$
 N_i \sim \text{Poisson or Negative Binomial}(\lambda_i)
-\]
+$$
 
 with
 
-\[
+$$
 \log(\lambda_i) =
 \log(\text{Exposure}_i)
 + \beta_0
@@ -187,13 +187,13 @@ with
 + \beta_{\text{compound}}
 + \beta_{\text{climate}}
 + \beta_{\text{mitigation}}.
-\]
+$$
 
 The severity component, conditional on a claim, will use a positive continuous distribution such as Gamma or Lognormal:
 
-\[
+$$
 X_i \mid N_i>0 \sim \text{Gamma or Lognormal}
-\]
+$$
 
 with expected severity driven by insured value, occupancy, event type, and mitigation status.
 
@@ -254,9 +254,9 @@ Students estimate claim frequency using an appropriate count model with exposure
 
 A simplified conceptual form is:
 
-\[
+$$
 \text{Claim Frequency} = \frac{\text{Claim Count}}{\text{Exposure}}
-\]
+$$
 
 with regression used to estimate systematic effects.
 
@@ -264,11 +264,11 @@ with regression used to estimate systematic effects.
 
 Severity is measured conditional on a claim occurring:
 
-\[
+$$
 \text{Conditional Severity}
 =
 E(\text{Paid Loss}\mid N>0).
-\]
+$$
 
 Students compare at least one defensible severity distribution/model and interpret the fitted effects.
 
@@ -276,9 +276,9 @@ Students compare at least one defensible severity distribution/model and interpr
 
 Expected loss cost is obtained from the frequency-severity framework:
 
-\[
+$$
 E(L) = E(N)\times E(X).
-\]
+$$
 
 Where relevant, the notebook distinguishes loss cost per exposure from total portfolio expected loss.
 
@@ -286,12 +286,12 @@ Where relevant, the notebook distinguishes loss cost per exposure from total por
 
 The case supplies an expense ratio and target underwriting/profit provision. Students calculate an indicated premium using a transparent simplified indication:
 
-\[
+$$
 \text{Indicated Premium}
 =
 \frac{\text{Expected Loss + Fixed Expense per Exposure}}
 {1-\text{Variable Expense Ratio}-\text{Profit/Contingency Provision}}.
-\]
+$$
 
 Students then compare the indicated premium with the current premium.
 
@@ -299,11 +299,11 @@ Students then compare the indicated premium with the current premium.
 
 Premium adequacy is evaluated using both:
 
-\[
+$$
 \text{Adequacy Ratio}
 =
 \frac{\text{Current Premium}}{\text{Indicated Premium}}
-\]
+$$
 
 and an expected loss-ratio view.
 
@@ -315,17 +315,17 @@ Monte Carlo simulation generates the annual portfolio loss distribution under ea
 
 Students calculate:
 
-\[
+$$
 VaR_{99}
-\]
+$$
 
 and
 
-\[
+$$
 TVaR_{99}
 =
 E[L \mid L > VaR_{99}].
-\]
+$$
 
 The comparison focuses on how stress affects both the center and the tail of the distribution.
 
@@ -346,15 +346,15 @@ The primary decision is not based only on the expected-loss-reduction-to-cost ra
 
 Instead, teams solve a constrained portfolio decision:
 
-\[
+$$
 \min TVaR_{99}
-\]
+$$
 
 subject to
 
-\[
+$$
 \sum_i \text{Mitigation Cost}_i \leq \text{Climate Resilience Budget}.
-\]
+$$
 
 Expected-loss reduction and benefit-cost ratios are reported as supporting measures. This prevents the exercise from rewarding a mitigation choice that looks efficient on average while leaving severe tail exposure largely unchanged.
 
