@@ -177,17 +177,7 @@ $$
 
 with
 
-$$
-\log(\lambda_i) =
-\log(\text{Exposure}_i)
-+ \beta_0
-+ \beta_{\text{occupancy}}
-+ \beta_{\text{air}}
-+ \beta_{\text{water}}
-+ \beta_{\text{compound}}
-+ \beta_{\text{climate}}
-+ \beta_{\text{mitigation}}.
-$$
+$$ \log(\lambda_i) = \log(\text{Exposure}_i) + \beta_0 + \beta_{\text {occupancy}} + \beta_{\text{air}} + \beta_{\text{water}} + \beta_{\text{compound}} + \beta_{\text{climate}} + \beta_{\text{mitigation}}. $$
 
 The severity component, conditional on a claim, will use a positive continuous distribution such as Gamma or Lognormal:
 
@@ -282,12 +272,7 @@ Where relevant, the notebook distinguishes loss cost per exposure from total por
 
 The case supplies an expense ratio and target underwriting/profit provision. Students calculate an indicated premium using a transparent simplified indication:
 
-$$
-\text{Indicated Premium}
-=
-\frac{\text{Expected Loss + Fixed Expense per Exposure}}
-{1-\text{Variable Expense Ratio}-\text{Profit/Contingency Provision}}.
-$$
+$$ \text{Indicated Premium} = \frac{\text{Expected Loss + Fixed Expense per Exposure}} {1-\text{Variable Expense Ratio}-\text{Profit/Contingency Provision}}.$$
 
 Students then compare the indicated premium with the current premium.
 
@@ -295,11 +280,7 @@ Students then compare the indicated premium with the current premium.
 
 Premium adequacy is evaluated using both:
 
-$$
-\text{Adequacy Ratio}
-=
-\frac{\text{Current Premium}}{\text{Indicated Premium}}
-$$
+$$ \text{Adequacy Ratio} = \frac{\text{Current Premium}}{\text{Indicated Premium}}$$
 
 and an expected loss-ratio view.
 
@@ -317,11 +298,7 @@ $$
 
 and
 
-$$
-TVaR_{99}
-=
-E[L \mid L > VaR_{99}].
-$$
+$$ TVaR_{99} = E[L \mid L > VaR_{99}].$$
 
 The comparison focuses on how stress affects both the center and the tail of the distribution.
 
