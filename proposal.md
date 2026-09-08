@@ -1,507 +1,600 @@
-# ClimateTwin: An Actuarial Digital Twin for Air--Water Climate Risk Management
+# ClimateTwin: An Actuarial Digital Twin for Air–Water Climate Risk Management
 
-### (Proposed Teaching Material for the CAS Global Teaching Materials Innovation Challenge 2026)
+### Proposed Teaching Material for the CAS Global Teaching Materials Innovation Challenge 2026
 
 ## 1. Project Title and Summary
 
-ClimateTwin: An Actuarial Digital Twin for Air--Water Climate Risk Management
+ClimateTwin: An Actuarial Digital Twin for Air–Water Climate Risk Management
 
-ClimateTwin is a scenario-based actuarial teaching laboratory in which students manage a simulated commercial insurance portfolio exposed to two increasingly interconnected climate risks: deteriorating air quality and deteriorating water quality.
+ClimateTwin is a compact, scenario-based actuarial case in which students act as the pricing and risk team for AquaAir General Insurance, a fictional insurer writing commercial property and business interruption coverage with a defined environmental impairment endorsement for hospitals, manufacturing facilities, and food-processing facilities.
 
-Rather than treating climate risk as a single catastrophe event, ClimateTwin teaches students to quantify a form of risk that develops through repeated environmental stress, threshold exceedances, spatial dependence, accumulation, and compound events. Students combine environmental measurements, exposure information, insurance losses, climate scenarios, and statistical models to estimate expected loss, tail risk, premiums, capital requirements, and intervention value.
+The case focuses on one practical question: How should an insurer translate deteriorating air and water conditions into defensible frequency, severity, pricing, tail-risk, and mitigation decisions for a commercial portfolio?
 
-The innovation is that students do not stop after building a predictive model. They operate an Actuarial Climate Risk Digital Twin.
+Students work with a synthetic policy-location-year dataset and a ready-to-run notebook. They estimate exposure-adjusted claim frequency and conditional claim severity, calculate expected loss cost and indicated premium, simulate aggregate annual portfolio loss, measure VaR and TVaR, test premium adequacy under climate stress, and evaluate the financial value of mitigation.
 
-They repeatedly move through the cycle:
+The core case is deliberately limited to four scenarios:
 
-Observe → Model → Price → Stress → Intervene → Reprice
+1. Baseline conditions
+2. Air-quality stress
+3. Water-quality stress
+4. Compound air–water stress
 
-Students therefore experience actuarial science as a real risk-management decision process rather than as a collection of isolated statistical techniques.
+The teaching cycle is:
 
-The final question of the case is: **Can an actuary convert environmental signals into financially meaningful risk signals early enough to change underwriting, pricing, capital allocation, and risk-mitigation decisions before losses materialize?**
+Observe → Model → Price → Stress → Mitigate → Reprice
 
-# 2. Why This Problem Matters
+Advanced topics such as spatial models, copulas, alternative dependence structures, and adaptive optimization are retained only as optional extensions. The first release is therefore designed as a minimum viable classroom package that can be executed, taught, assessed, and piloted, rather than as a broad conceptual climate-risk framework.
 
-Climate risk is often taught through hurricanes, floods, wildfires, or other clearly identifiable catastrophe events. These are important, but they represent only one form of climate-related risk.
+## 2. Insurance Setting and Coverage Architecture
 
-A second class of risk is more gradual and much harder to price.
+### 2.1 Portfolio
 
-Consider a commercial insurer covering hospitals, manufacturing facilities, schools, warehouses, food-processing companies, hospitality businesses, and municipal infrastructure.
+Students receive a synthetic portfolio of approximately 750 policy-location-year records covering three commercial occupancies:
 
-During an extreme climate period:
+- hospitals;
+- manufacturing facilities; and
+- food-processing facilities.
 
--   high temperatures and stagnant atmospheric conditions increase concentrations of PM2.5, ozone, and other pollutants;
+Policies are distributed across several synthetic regions with different environmental conditions, insured values, policy structures, and mitigation characteristics. Each record represents one insured location for one policy year.
 
--   drought reduces river flow and pollutant dilution;
+The instructional portfolio is not intended to reproduce any specific insurer's policy wording. It is a simplified, internally consistent P&C teaching contract created so that the path from environmental hazard to covered insurance loss is explicit.
 
--   flooding can introduce sewage, industrial contaminants, and agricultural runoff into water systems;
+### 2.2 Covered losses
 
--   water treatment costs increase;
+The fictional policy combines commercial property/business interruption coverage with an Environmental Impairment Endorsement. For the case, a claim can arise only when a defined insured trigger occurs.
 
--   outdoor or industrial activity may be restricted;
+Air-quality insured event
 
--   businesses experience interruptions or remediation costs;
+A covered air event occurs when:
 
--   environmental liability claims can emerge;
+- the location's air-quality indicator exceeds the case threshold for the required duration; and
+- the facility experiences a documented operational restriction, temporary closure, or insured filtration/remediation response under the policy conditions.
 
--   worker and public exposure can increase;
+Covered amounts may include qualifying extra expense and business-interruption loss after the applicable waiting period and deductible.
 
--   multiple insured locations may experience losses simultaneously.
+Water-quality insured event
 
-These risks are neither purely environmental nor purely financial.
+A covered water event occurs when:
 
-They create an actuarial question: **How does a changing environmental state alter the probability, severity, dependence, and accumulation of insured losses?**
+- a defined water-quality indicator exceeds the case contamination threshold or an official no-use/boil-water condition is triggered; and
+- the event causes covered cleanup, treatment, repair, extra expense, or business interruption at the insured location.
 
-ClimateTwin makes this question measurable.
+Compound insured event
 
-Students learn that a pollutant reading is not itself an insurance loss. The actuarial task is to construct the chain:
+A compound event occurs when both air and water triggers affect the same insured location within the defined event window or policy year. Compound risk is not assumed to equal the simple sum of the two standalone risks because the conditions may jointly affect claim frequency, severity, and portfolio accumulation.
 
-Climate Conditions can include - Environmental Hazard, Exposure, Vulnerability, Insurance Event, Claim Frequency and Severity, Portfolio Loss, and Premium and Capital Decision
+### 2.3 What is not a claim
 
-This becomes the central intellectual framework of the exercise.
+Environmental deterioration by itself is not an insurance claim. A high PM2.5 value, poor water reading, or adverse climate indicator only becomes actuarially relevant when it changes the probability or size of a covered insured event.
 
-# 3. The Core Teaching Innovation: The Actuarial Climate Risk Digital Twin
+The case therefore uses the following chain:
 
-Each student team receives a fictional insurer called AquaAir General Insurance with a portfolio of commercial properties distributed across several geographic zones.
+Climate conditions → Environmental hazard → Exposure and vulnerability → Defined coverage trigger → Claim frequency and severity → Policy terms → Portfolio loss → Premium and risk decision
 
-Every zone contains a different combination of:
+### 2.4 Policy terms
 
--   air-quality measurements;
+Each record contains:
 
--   water-quality measurements;
+- insured value;
+- policy limit;
+- deductible;
+- business-interruption waiting-period indicator;
+- exposure measure;
+- current premium; and
+- mitigation status.
 
--   weather and climate variables;
+Claim payments are calculated after applying the deductible and policy limit. The student notebook clearly distinguishes ground-up loss, covered loss, and insurer-paid loss.
 
--   population and industrial density;
+### 2.5 Exclusions and simplifications
 
--   insured property values;
+To keep the exercise focused, the core case excludes:
 
--   business types;
+- employee health and workers compensation claims;
+- third-party bodily injury and environmental liability;
+- gradual pollution with no defined insured trigger;
+- losses outside the endorsement's event definition;
+- intentional or known non-compliance;
+- mold and other long-latency contamination;
+- uninsured shutdowns below the stated waiting period; and
+- amounts above the policy limit.
 
--   historical claim frequency;
+These exclusions prevent students from incorrectly interpreting general environmental harm as automatically covered P&C loss.
 
--   historical claim severity;
+## 3. Core Teaching Innovation
 
--   mitigation infrastructure.
+ClimateTwin is designed as an actuarial decision laboratory, not simply a predictive-modelling exercise.
 
-The teaching environment represents the portfolio as a simplified digital twin.
+Each team receives the same AquaAir portfolio and is asked to answer a sequence of increasingly difficult insurance questions:
 
-Students initially see the insurer under Current Conditions.
+1. What is the portfolio's baseline frequency and severity?
+2. Which environmental variables materially change expected insured loss?
+3. Is the current premium adequate?
+4. What happens to aggregate loss and tail risk when air quality worsens?
+5. What happens when water quality worsens?
+6. What happens when both stresses occur together?
+7. Which mitigation actions should the insurer fund under a limited resilience budget?
+8. After mitigation, how should the insurer reprice or manage the portfolio?
 
-They then progressively activate future or adverse scenarios such as:
+The intended "aha" moment is that the region with the worst environmental measurement is not necessarily the region that contributes most to insured loss or tail risk. Insurance risk depends on the interaction of hazard, exposure, vulnerability, policy terms, and dependence.
 
-### Scenario A: Heat and Air Stagnation
+## 4. Learning Objectives
 
-Extreme heat and low wind increase PM2.5 and ozone concentrations.
+By the end of the case, students should be able to:
 
-Students investigate whether claim frequency rises non-linearly after environmental thresholds are crossed.
+1. Translate climate information into insured-loss mechanisms.  
+   Distinguish environmental hazard from exposure, vulnerability, trigger, covered claim, and insurer-paid loss.
 
-### Scenario B: Drought and Water Stress
+2. Model exposure-adjusted claim frequency.  
+   Estimate claim frequency using an actuarial count model with an exposure offset and interpret the effect of occupancy, climate, environmental, and mitigation variables.
 
-Reduced water availability increases contaminant concentration and pressure on industrial and municipal water systems.
+3. Model conditional claim severity.  
+   Estimate claim severity conditional on a claim occurring and explain the influence of insured value, occupancy, trigger type, and mitigation.
 
-### Scenario C: Extreme Rainfall and Contamination
+4. Calculate loss cost and indicated premium.  
+   Combine frequency and severity into expected loss cost and apply a transparent expense/profit structure to produce an indicated premium.
 
-Heavy rainfall creates runoff and contamination events, producing possible property, business-interruption, cleanup, and liability losses.
+5. Measure aggregate and tail risk.  
+   Simulate annual portfolio losses and calculate VaR and TVaR under baseline and stress conditions.
 
-### Scenario D: Compound Air--Water Stress
+6. Evaluate premium adequacy under stress.  
+   Compare current premium with stressed expected loss and indicated premium and identify where the portfolio becomes underpriced.
 
-A prolonged climate episode produces poor air quality and deteriorating water quality simultaneously.
+7. Evaluate mitigation financially.  
+   Quantify expected-loss reduction, benefit-cost ratio, and tail-risk reduction from mitigation.
 
-This is the most important scenario.
+8. Make and communicate an actuarial recommendation.  
+   Defend pricing, underwriting, mitigation, or portfolio actions to a simulated Climate Risk Committee.
 
-Students discover that:
+## 5. Dataset and Known Data-Generating Process
 
-$$ Risk(Air + Water) \neq Risk(Air) + Risk(Water) $$
+### 5.1 Student dataset
 
-because exposures can be correlated and losses may accumulate geographically and temporally.
+The core dataset will contain approximately 750 policy-location-year observations in CSV format. A parallel Excel version may also be provided for accessibility.
 
-The digital twin allows students to change assumptions and immediately observe how the insurer\'s expected loss, premium adequacy and tail-risk position change.
+The student-facing data will include the following variable groups.
 
-# 4. Learning Objectives
+| Group | Example variables |
+|---|---|
+| Policy | `policy_id`, `year`, `region`, `occupancy`, `exposure_years` |
+| Financial exposure | `insured_value`, `policy_limit`, `deductible`, `current_premium` |
+| Air | `pm25`, `ozone`, `air_stress_flag` |
+| Water | `turbidity`, `water_quality_index`, `water_stress_flag` |
+| Climate | `temperature`, `rainfall`, `drought_indicator` |
+| Mitigation | `air_filtration`, `water_treatment`, `business_continuity_plan` |
+| Claims | `claim_count`, `aggregate_ground_up_loss`, `aggregate_paid_loss` |
 
-At the end of the exercise, students should be able to:
+Only variables required for the core learning objectives are included. Additional spatial or high-dimensional predictors are reserved for optional extensions.
 
-### 1. Translate climate information into actuarial variables
+### 5.2 Instructor-only data-generating process
 
-Students distinguish between:
+The synthetic data will be generated from a documented process stored in the instructor materials. The exact coefficients are hidden from students but known to the instructor so that expected actuarial relationships are intentional and reproducible.
 
--   hazard,
+The frequency component will follow a structure such as:
 
--   exposure,
+\[
+N_i \sim \text{Poisson or Negative Binomial}(\lambda_i)
+\]
 
--   vulnerability,
+with
 
--   event,
+\[
+\log(\lambda_i) =
+\log(\text{Exposure}_i)
++ \beta_0
++ \beta_{\text{occupancy}}
++ \beta_{\text{air}}
++ \beta_{\text{water}}
++ \beta_{\text{compound}}
++ \beta_{\text{climate}}
++ \beta_{\text{mitigation}}.
+\]
 
--   claim,
+The severity component, conditional on a claim, will use a positive continuous distribution such as Gamma or Lognormal:
 
--   and financial loss.
+\[
+X_i \mid N_i>0 \sim \text{Gamma or Lognormal}
+\]
 
-This prevents the common mistake of treating an environmental indicator directly as an insurance outcome.
+with expected severity driven by insured value, occupancy, event type, and mitigation status.
 
-### 2. Model insurance frequency and severity
+Policy deductibles and limits are then applied to simulated ground-up losses to generate insurer-paid losses.
 
-Students model claim frequency using approaches such as:
+The data-generating process will intentionally include:
 
--   Poisson regression,
+- higher claim frequency under air stress;
+- higher claim frequency and/or severity under water stress;
+- a non-zero compound air–water interaction;
+- occupancy differences;
+- mitigation effects that reduce expected and/or tail loss; and
+- enough random variation that the correct conclusions are not visually obvious from raw data.
 
--   Negative Binomial regression,
+A fixed random seed and full generation script will be supplied in the instructor package so that the dataset is completely reproducible.
 
--   Generalized Linear Models,
+## 6. Four Core Scenarios
 
--   nonlinear environmental-response functions.
+### Scenario 1 — Baseline
 
-Claim severity can be modelled using Gamma, Lognormal, Pareto, or related loss distributions.
+Students estimate the portfolio under current environmental conditions.
 
-### 3. Identify environmental thresholds
+They calculate:
 
-Students investigate whether loss behaviour changes when measures such as PM2.5 or water contamination cross critical levels.
+- exposure-adjusted frequency;
+- conditional severity;
+- expected loss cost;
+- indicated premium;
+- aggregate annual loss distribution;
+- VaR and TVaR; and
+- baseline premium adequacy.
 
-This introduces nonlinear risk relationships rather than assuming that climate risk increases uniformly.
+### Scenario 2 — Air-Quality Stress
 
-### 4. Measure compound and dependent risk
+Air-quality variables are stressed while the water environment remains at baseline.
 
-Students examine whether adverse air- and water-quality conditions occur together and how dependence alters aggregate portfolio losses.
+The scenario represents a persistent heat/stagnation episode that raises air-quality indicators and therefore the probability of qualifying operational restrictions and covered extra-expense/business-interruption claims.
 
-More advanced students may use:
+### Scenario 3 — Water-Quality Stress
 
--   correlation structures,
+Water-quality variables are stressed while air conditions remain at baseline.
 
--   copulas,
+The scenario represents drought or contamination pressure sufficient to increase the probability of defined water-related insured events and associated cleanup, treatment, extra-expense, and business-interruption losses.
 
--   spatial dependence models,
+### Scenario 4 — Compound Air–Water Stress
 
--   or multivariate simulation.
+Both stresses occur together.
 
-### 5. Quantify tail risk
+Students compare the compound portfolio result with the standalone scenarios and examine whether the combination materially changes expected loss, premium adequacy, and tail risk.
 
-Students estimate:
+The core case does not require copula modelling or advanced spatial dependence. The dependence embedded in the synthetic scenario is handled through the instructor-defined data-generating process and scenario simulation. Copulas, spatial modelling, and alternative dependence structures are optional advanced modules.
 
--   expected annual loss,
+## 7. Actuarial Mechanics Required in the Core Case
 
--   loss exceedance probabilities,
+### 7.1 Exposure-adjusted frequency
 
--   Value-at-Risk,
+Students estimate claim frequency using an appropriate count model with exposure as an offset or denominator.
 
--   Tail Value-at-Risk,
+A simplified conceptual form is:
 
--   probable maximum or stress losses.
+\[
+\text{Claim Frequency} = \frac{\text{Claim Count}}{\text{Exposure}}
+\]
 
-### 6. Translate modelling results into insurance decisions
+with regression used to estimate systematic effects.
 
-Students use results to recommend changes to:
+### 7.2 Conditional severity
 
--   underwriting,
+Severity is measured conditional on a claim occurring:
 
--   premiums,
+\[
+\text{Conditional Severity}
+=
+E(\text{Paid Loss}\mid N>0).
+\]
 
--   deductibles,
+Students compare at least one defensible severity distribution/model and interpret the fitted effects.
 
--   limits,
+### 7.3 Expected loss cost
 
--   geographic concentration,
+Expected loss cost is obtained from the frequency-severity framework:
 
--   risk engineering,
+\[
+E(L) = E(N)\times E(X).
+\]
 
--   mitigation incentives,
+Where relevant, the notebook distinguishes loss cost per exposure from total portfolio expected loss.
 
--   and capital allocation.
+### 7.4 Indicated premium
 
-### 7. Evaluate mitigation economically
+The case supplies an expense ratio and target underwriting/profit provision. Students calculate an indicated premium using a transparent simplified indication:
 
-Students compare the cost of interventions against expected avoided losses.
+\[
+\text{Indicated Premium}
+=
+\frac{\text{Expected Loss + Fixed Expense per Exposure}}
+{1-\text{Variable Expense Ratio}-\text{Profit/Contingency Provision}}.
+\]
 
-They therefore move beyond: "Which region is risky?"
+Students then compare the indicated premium with the current premium.
 
-toward the actuarial question: "Where does one dollar of risk mitigation generate the greatest reduction in expected and tail loss?"
+### 7.5 Premium adequacy
 
-# 5. Suggested Curriculum Structure
+Premium adequacy is evaluated using both:
 
-The teaching material is designed as four classroom sessions plus one Climate Risk Lab.
+\[
+\text{Adequacy Ratio}
+=
+\frac{\text{Current Premium}}{\text{Indicated Premium}}
+\]
 
-Approximate total teaching time: 6--8 hours, adaptable for undergraduate, graduate, or professional actuarial courses.
+and an expected loss-ratio view.
 
-## Session 1 --- From Environmental Data to Insurable Risk
+Values below the required adequacy threshold indicate that the current premium is insufficient under the scenario assumptions.
 
-Students are introduced to the AquaAir insurance portfolio.
+### 7.6 Aggregate annual loss and tail risk
 
-They learn the distinction between climate hazard, environmental condition, exposure, vulnerability, and insured loss.
-
-Teams examine maps and summary statistics showing regional air and water conditions.
-
-The session concludes with a challenge: Which locations would you expect to generate the largest insurance loss, and why?
-
-Students make an initial judgement before modelling.
-
-Their answers are saved for comparison with later results.
-
-## Session 2 --- Building the Environmental Loss Function
-
-Students merge environmental and insurance data.
-
-They investigate relationships such as:
-
-$$ ClaimFrequency = f(PM_{2.5}, Ozone, Temperature, WaterQuality, Exposure) $$
-
-and
-
-$$ ClaimSeverity = g(Hazard, Industry, PropertyValue, Vulnerability) $$
-
-Students estimate frequency and severity separately and then combine them:
-
-$$ E(Loss)=E(N)\times E(X) $$
-
-The emphasis is not simply on finding the best statistical fit.
-
-Students must explain: What does the model imply about how climate conditions become insurance losses?
-
-## Session 3 --- Compound Risk, Dependence and Tail Loss
-
-Students now discover a limitation in their initial model.
-
-Air and water risks cannot always be modelled independently.
-
-They simulate correlated environmental conditions and generate a portfolio loss distribution using Monte Carlo simulation.
+Monte Carlo simulation generates the annual portfolio loss distribution under each scenario.
 
 Students calculate:
 
-$$ VaR_{99} $$
+\[
+VaR_{99}
+\]
 
 and
 
-$$ TVaR_{99} $$
+\[
+TVaR_{99}
+=
+E[L \mid L > VaR_{99}].
+\]
 
-and compare them across scenarios.
+The comparison focuses on how stress affects both the center and the tail of the distribution.
 
-This introduces a powerful actuarial lesson: An insurer can appear adequately priced under average conditions while remaining dangerously exposed to correlated climate stress.
+### 7.7 Financial value of mitigation
 
-## Session 4 --- Underwriting and Climate Risk Intervention
+Each mitigation option has a fixed implementation cost and an instructor-defined effect on frequency and/or severity.
 
-Students become the insurer\'s Climate Risk Committee.
+Students report:
 
-They receive a limited Climate Resilience Budget.
+- expected-loss reduction;
+- mitigation cost;
+- benefit-cost ratio;
+- reduction in VaR;
+- reduction in TVaR; and
+- post-mitigation premium adequacy.
 
-Possible interventions might include:
+The primary decision is not based only on the expected-loss-reduction-to-cost ratio.
 
--   improved water filtration,
+Instead, teams solve a constrained portfolio decision:
 
--   backup water systems,
+\[
+\min TVaR_{99}
+\]
 
--   pollution-control technology,
+subject to
 
--   air-filtration upgrades,
+\[
+\sum_i \text{Mitigation Cost}_i \leq \text{Climate Resilience Budget}.
+\]
 
--   operational shutdown protocols,
+Expected-loss reduction and benefit-cost ratios are reported as supporting measures. This prevents the exercise from rewarding a mitigation choice that looks efficient on average while leaving severe tail exposure largely unchanged.
 
--   environmental monitoring,
+## 8. Teaching Structure and Duration
 
--   reduced geographic concentration,
+The full version separates in-class and independent work.
 
--   policy deductible changes,
+### Full version: approximately 6–7 hours
 
--   premium adjustments,
+| Component | Mode | Time | Main output |
+|---|---|---:|---|
+| Pre-class preparation | Independent | 45–60 min | Read case, inspect data dictionary, answer hazard-to-claim questions |
+| Session 1: Insurance setting and baseline | In class | 60 min | Coverage map, descriptive analysis, baseline expectations |
+| Session 2: Frequency, severity and pricing | In class | 75 min | Frequency model, severity model, loss cost, indicated premium |
+| Session 3: Stress testing and tail risk | In class | 75 min | Scenario loss distributions, VaR, TVaR, adequacy comparison |
+| Session 4: Mitigation and committee decision | In class | 60 min | Budget-constrained mitigation decision and recommendation |
+| Final committee memo | Independent | 60–90 min | Short actuarial recommendation with quantitative support |
 
--   risk-engineering inspections.
+In-class time: approximately 4.5 hours  
+Independent work: approximately 2–2.5 hours
 
-Every intervention has a cost and an assumed effect on risk.
+### One-session version: approximately 2 hours
 
-Students cannot select everything.
+A shorter version will provide pre-fitted frequency and severity models. Students will:
 
-They must determine the portfolio of interventions producing the greatest risk reduction subject to a budget constraint.
+1. review the coverage mechanism;
+2. calculate baseline loss cost and indicated premium;
+3. run the four provided scenarios;
+4. compare VaR/TVaR and premium adequacy;
+5. choose mitigation under a fixed budget; and
+6. deliver a short committee recommendation.
 
-A simplified optimisation can be expressed as:
+This version preserves the main actuarial decision insight without requiring full model fitting.
 
-$$ \max \frac{\text{Expected Loss Reduction}}{\text{Mitigation Cost}} $$
+## 9. Mapping to CAS Education and General-Insurance Competencies
 
-or, for advanced classes:
+The case is intentionally aligned with current CAS general-insurance education rather than using climate risk as a stand-alone environmental topic.
 
-$$ \min TVaR_{99} $$
+| Learning objective | General-insurance competency | CAS education connection |
+|---|---|---|
+| Translate hazard into covered loss | Coverage interpretation, exposure definition, actuarial judgment | Supports the practical insurance context required across P&C work and ratemaking exercises |
+| Model exposure-adjusted frequency | Frequency modelling, GLMs, predictive analytics | MAS-II: statistical learning concepts; Exam 8: interpretation/evaluation of classification ratemaking models and GLM-based approaches |
+| Model conditional severity | Severity modelling and loss-cost estimation | Exam 5: loss experience and ratemaking foundations; Exam 8: component models and individual/classification risk pricing |
+| Calculate expected loss cost | Frequency-severity framework, pure premium | Exam 5: basic ratemaking and rate-level indication concepts |
+| Calculate indicated premium | Expense/profit loads, pricing indication | Exam 5: ratemaking, underwriting provisions, and indications |
+| Evaluate premium adequacy | Pricing sufficiency and scenario sensitivity | Exam 5 / Exam 8: pricing and classification/rate adequacy applications |
+| Simulate aggregate loss and calculate VaR/TVaR | Portfolio risk and tail-risk measurement | Exam 9: risk management, risk-adjusted decision-making, and financial risk management |
+| Evaluate mitigation under a budget | Risk reduction, capital-aware decision-making | Exam 9: risk management, cost of risk, risk-adjusted pricing/performance concepts |
+| Present committee recommendation | Professional judgment and communication | Reinforces communication of actuarial results, assumptions, limitations, and business recommendations |
 
-subject to:
+The case therefore connects predictive modelling, frequency-severity analysis, ratemaking, portfolio risk, risk management, and professional communication in one classroom exercise.
 
-$$ \sum InterventionCost_i \leq Budget $$
+## 10. Student Workflow and Expected Outputs
 
-This transforms the exercise from climate-risk measurement into actuarial climate-risk management.
+Students complete the case in five stages.
 
-# 6. Climate Risk Lab --- The "Aha!" Moment
+### Stage 1 — Coverage and data interpretation
 
-The final laboratory is designed to produce the key teaching experience.
+Expected output
 
-Teams press Run Climate Stress Test.
+- one hazard-to-claim diagram;
+- identification of insured triggers and exclusions;
+- descriptive summary of the portfolio.
 
-The portfolio is simulated thousands of times under:
+### Stage 2 — Baseline actuarial model
 
-1.  Baseline environmental conditions
+Expected output
 
-2.  Severe air-quality stress
+- exposure-adjusted frequency estimate/model;
+- conditional severity estimate/model;
+- expected loss cost by selected segment;
+- baseline aggregate expected loss.
 
-3.  Severe water-quality stress
+### Stage 3 — Pricing
 
-4.  Compound air--water stress
+Expected output
 
-5.  Compound stress after mitigation
+- indicated premium;
+- adequacy ratio;
+- identification of underpriced or adequately priced segments.
 
-Students compare distributions rather than single-point estimates.
+### Stage 4 — Climate stress test
 
-They may discover, for example, that the region generating the highest average loss is not necessarily the region generating the greatest contribution to portfolio tail risk.
+Expected output
 
-They may also discover that the intervention producing the greatest reduction in average loss does not necessarily produce the greatest reduction in TVaR.
+A comparison table containing, at minimum:
 
-This creates the central actuarial insight: Managing climate risk is not simply predicting where environmental conditions will worsen. It is deciding which environmental changes matter financially, where losses accumulate, how extreme outcomes behave, and which interventions change that distribution most efficiently.
+- expected annual loss;
+- indicated premium;
+- adequacy ratio;
+- VaR at 99%;
+- TVaR at 99%;
 
-# 7. Datasets and Teaching Tools
+for baseline, air stress, water stress, and compound stress.
 
-The case can be distributed using compact CSV datasets and a ready-to-run Python or R notebook.
+### Stage 5 — Mitigation decision
 
-Potential variables include:
+Expected output
 
-### Environmental Data
+- selected mitigation portfolio within budget;
+- expected-loss reduction;
+- benefit-cost ratio;
+- TVaR reduction;
+- post-mitigation premium adequacy; and
+- a short recommendation to the Climate Risk Committee.
 
--   PM2.5
+## 11. Guiding Questions
 
--   PM10
+1. What must happen for an adverse air- or water-quality observation to become a covered claim?
+2. Which variables most strongly affect exposure-adjusted claim frequency?
+3. Which variables most strongly affect conditional severity?
+4. Do the same variables affect frequency and severity in the same direction?
+5. Which occupancy has the highest expected loss cost after controlling for exposure?
+6. Is the current portfolio premium adequate under baseline conditions?
+7. Which standalone stress produces the largest change in expected loss?
+8. Which scenario produces the largest change in TVaR?
+9. Does the compound scenario create a materially different portfolio result from considering air and water stresses separately?
+10. Which locations or occupancy groups contribute most to expected loss and which contribute most to tail risk?
+11. Which mitigation set minimizes TVaR while remaining within the resilience budget?
+12. Would the mitigation decision change if the insurer focused only on expected-loss benefit-cost ratio?
+13. After mitigation, should the insurer reprice, change deductibles/limits, restrict capacity, require mitigation, or maintain current terms?
+14. What assumptions or model limitations should be communicated to management?
 
--   ozone
+## 12. Assessment Strategy
 
--   temperature
+The final student deliverable is a short Climate Risk Committee Memo supported by notebook outputs.
 
--   humidity
+| Criterion | Weight | Evidence of strong performance |
+|---|---:|---|
+| Coverage and loss-mechanism understanding | 15% | Correctly distinguishes environmental deterioration from covered insured events |
+| Frequency-severity modelling | 25% | Uses exposure appropriately, fits/interprets models correctly, and separates frequency from conditional severity |
+| Ratemaking and premium adequacy | 20% | Calculates loss cost and indicated premium correctly and interprets adequacy under stress |
+| Portfolio and tail-risk analysis | 20% | Correctly calculates/interprets aggregate loss, VaR, TVaR, and scenario differences |
+| Mitigation decision | 10% | Uses the budget constraint and reports both tail-risk and expected-loss effects |
+| Professional communication | 10% | Gives a concise, defensible recommendation with assumptions and limitations |
 
--   rainfall
+A scoring rubric with performance levels will be supplied to instructors.
 
--   drought indicator
+## 13. Complete Classroom Package
 
--   water pH
+The submission will be organized as a ready-to-use instructor package rather than a proposal alone.
 
--   dissolved oxygen
+The minimum package will include:
 
--   turbidity
+1. Instructor Guide  
+   Teaching objectives, prerequisite knowledge, schedule, classroom flow, model assumptions, data-generating process, common misconceptions, expected results, and discussion notes.
 
--   conductivity
+2. Student Case Document  
+   Insurance background, policy structure, scenario definitions, tasks, guiding questions, and required deliverables.
 
--   selected contamination indicators
+3. Synthetic Dataset  
+   Approximately 750 policy-location-year records in CSV, plus a data dictionary.
 
-### Insurance Portfolio Data
+4. Data-Generation Script  
+   Reproducible instructor-only script with fixed seed and documented hidden relationships.
 
--   location
+5. Ready-to-Run Python Notebook  
+   Data checks, frequency, severity, loss cost, pricing, simulation, VaR/TVaR, scenario comparison, and mitigation analysis.
 
--   occupancy or industry
+6. Solution Notebook  
+   Completed calculations, expected outputs, interpretation notes, and instructor checkpoints.
 
--   insured value
+7. Presentation Slides  
+   Short slide deck introducing the insurer, coverage mechanism, four scenarios, and committee challenge.
 
--   policy limit
+8. Assessment Rubric  
+   Scoring criteria for technical work and professional communication.
 
--   deductible
+9. Software and Setup Instructions  
+   Python version, package requirements, Jupyter/Colab instructions, file structure, and a no-install cloud option where feasible.
 
--   historical claims
+10. Expected-Output Sheet  
+    Instructor reference containing expected ranges/tables/figures for each stage.
 
--   claim type
+The interactive dashboard is not required for the minimum viable submission. It will be described only as a future extension unless a stable, tested version is completed before submission.
 
--   claim amount
+## 14. Pedagogical Effectiveness and Pilot Validation
 
-### Geographic and Exposure Data
+The case will be pilot-tested before the final CAS submission with a small group of approximately 4–8 students or recent actuarial learners who have basic statistics and insurance knowledge but have not seen the instructor solution.
 
--   industrial density
+The pilot will record:
 
--   proximity to water
+- total completion time;
+- completion rate by stage;
+- questions or instructions that caused confusion;
+- coding/setup difficulties;
+- whether the dataset was sufficient without instructor intervention;
+- errors in distinguishing environmental indicators from insurance triggers;
+- difficulty with frequency-severity modelling;
+- difficulty interpreting VaR/TVaR and premium adequacy;
+- whether students reached the intended insight about expected loss versus tail risk;
+- quality of final insurance recommendations; and
+- specific revisions made after the pilot.
 
--   climate zone
+A short pre/post prompt will also be used:
 
--   population density
+Before the case: "Which region do you believe is the insurer's greatest climate risk, and why?"
 
--   vulnerability score
+After the case: "Which part of the portfolio creates the greatest financial/tail risk, and what action should the insurer take?"
 
-Public environmental data can be used where appropriate, while an instructional synthetic insurance portfolio avoids privacy and commercial-data restrictions.
+The comparison provides simple evidence that students moved from environmental-risk intuition to actuarial-risk reasoning.
 
-A simplified version could operate entirely in Excel.
+The final submission's instructor guide will contain a brief Pilot and Revision Note reporting actual participants, completion time, observed difficulties, intended learning outcome achievement, and changes made after testing. No pilot results will be invented; this section will be completed from the actual classroom trial before submission.
 
-The full version can use Python/Jupyter or R.
+## 15. Optional Advanced Extensions
 
-# 8. Guiding Questions for Students
+The following topics are deliberately excluded from the required core case and may be offered as optional graduate/professional extensions:
 
-Students progress through questions such as:
+- spatial dependence and geographic accumulation;
+- copula-based air–water dependence;
+- alternative severity distributions;
+- zero-inflated count models;
+- credibility;
+- model validation and out-of-sample testing;
+- uncertainty intervals around indicated premium;
+- reinsurance or aggregate stop-loss structures;
+- alternative capital/risk-load approaches;
+- adaptive mitigation optimization; and
+- an interactive ClimateTwin dashboard.
 
-1.  Which environmental variables demonstrate the strongest relationship with claim frequency?
+This separation keeps the first release teachable while preserving a pathway for more advanced actuarial courses.
 
-2.  Does deterioration in environmental quality create a linear increase in risk, or are there identifiable thresholds?
+## 16. Why ClimateTwin Is Innovative and Doable
 
-3.  Are claim frequency and claim severity affected in the same manner?
+ClimateTwin does not ask students merely to forecast pollution or discuss climate change qualitatively. It asks them to make a P&C actuarial decision from a changing environmental state.
 
-4.  What happens if air and water risks are assumed to be independent?
+The exercise is innovative because it brings together:
 
-5.  How does the result change when dependence is introduced?
+- a clearly defined commercial insurance contract;
+- air and water quality as emerging climate-linked risk signals;
+- frequency-severity modelling;
+- ratemaking;
+- aggregate simulation;
+- tail-risk measurement;
+- stress testing;
+- mitigation economics; and
+- professional insurance decision-making.
 
-6.  Which geographic areas contribute most to expected loss?
+At the same time, the scope is intentionally controlled. Students work with one portfolio, one coverage architecture, one compact synthetic dataset, four scenarios, and one decision framework.
 
-7.  Which contribute most to TVaR?
+The central learning message is: Environmental severity is not the same as insurance severity. Actuarial climate-risk management requires translating hazard into covered loss, quantifying the full loss distribution, testing premium adequacy, and deciding how pricing and mitigation should change before losses materialize.
 
-8.  Should the insurer increase premiums, reduce limits, introduce deductibles, require mitigation, or withdraw capacity?
-
-9.  Which mitigation strategy creates the greatest expected loss reduction per unit of expenditure?
-
-10. After intervention, is the portfolio merely safer on average, or is its tail also safer?
-
-The final question asks each team to defend a recommendation to the insurer\'s hypothetical board.
-
-# 9. Assessment Strategy
-
-Student performance can be evaluated across five dimensions.
-
-### Actuarial Modelling
-
-Correct selection and application of frequency, severity, aggregate-loss, and tail-risk techniques.
-
-### Statistical Reasoning
-
-Ability to recognize nonlinearity, uncertainty, dependence, model limitations, and potential confounding.
-
-### Climate-Risk Interpretation
-
-Ability to convert environmental indicators into meaningful actuarial risk mechanisms.
-
-### Insurance Decision-Making
-
-Quality of pricing, underwriting, capital, and mitigation recommendations.
-
-### Communication
-
-Ability to explain a technically sophisticated climate-risk problem to a non-technical insurance executive.
-
-The final deliverable can be a short Climate Risk Committee Report rather than a traditional examination.
-
-Teams must recommend: Insure / Reprice / Mitigate / Restrict / Monitor
-
-for selected parts of the portfolio and defend each decision quantitatively.
-
-# 10. Suggested Presentation Materials and Instructor Package
-
-The complete classroom package would include:
-
--   instructor slide deck;
-
--   student case document;
-
--   environmental dataset;
-
--   synthetic insurance portfolio dataset;
-
--   Jupyter/R analytical notebook;
-
--   ClimateTwin scenario simulator;
-
--   student worksheet;
-
--   Climate Risk Committee decision sheet;
-
--   solution notebook;
-
--   assessment rubric;
-
--   teaching notes.
-
-A lightweight interactive dashboard could visually display:
-
-Environmental State → Exposure → Expected Loss → VaR/TVaR → Premium → Capital → Mitigation
-
-allowing students to alter assumptions and immediately observe their consequences.
+ClimateTwin is therefore designed to be innovative enough to expose students to an emerging area of actuarial work, but concrete enough to be run, assessed, reproduced, and improved in an ordinary actuarial classroom.
