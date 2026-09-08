@@ -264,11 +264,7 @@ with regression used to estimate systematic effects.
 
 Severity is measured conditional on a claim occurring:
 
-$$
-\text{Conditional Severity}
-=
-E(\text{Paid Loss}\mid N>0).
-$$
+$$ \text{Conditional Severity} = E(\text{Paid Loss}\mid N>0).$$
 
 Students compare at least one defensible severity distribution/model and interpret the fitted effects.
 
