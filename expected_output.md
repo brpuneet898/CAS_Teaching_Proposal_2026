@@ -1,188 +1,266 @@
-# ClimateTwin Expected Output Sheet
+# ClimateTwin V2 Expected Output Sheet
 
-This sheet gives instructor benchmark outputs for the supplied `dataset.csv`, `student_notebook.ipynb`, and `solution.ipynb`. Exact numbers can vary slightly if students use a different defensible model specification, severity family, simulation count, or random seed. Basic data validation numbers should match exactly.
+This instructor sheet gives regenerated V2 benchmark outputs for `dataset.csv`, `claim_level_data.csv`, `data_script.py`, `student_notebook.ipynb`, and `solution.ipynb`. The values below are based on the corrected V2 data-generating process and the executed V2 solution notebook. Do not reuse V1 numerical targets.
+
+Exact model outputs can vary if students use a different defensible model specification, severity family, simulation count, or random seed. The basic data-validation and contract-mechanics checks should match exactly.
 
 ## 1. Dataset validation outputs
 
 | Item | Expected value |
 |---|---:|
-| Rows | 750 |
-| Columns | 35 |
+| Policy-year rows | 750 |
+| Policy-year columns | 35 |
 | Unique policy IDs | 750 |
 | Unique locations | 250 |
 | Years | 2024, 2025, 2026 |
-| Total claims | 138 |
-| Rows with at least one claim | 100 |
-| Total paid loss | 22,583,153.26 |
-| Total current premium | 40,132,000 |
+| Total exposure | 642.068 |
+| Total claims | 95 |
+| Policy-years with at least one claim | 71 |
+| Claim-level rows | 95 |
+| Legitimate zero-paid claim rows | 33 |
+| Total ground-up loss | 12,287,359.07 |
+| Total covered loss | 7,747,945.08 |
+| Total paid loss | 3,480,012.62 |
+| Total current premium | 40,978,000 |
 
-## 2. Stress and trigger validation
+## 2. Contract-mechanics validation
+
+The solution notebook should audit the V2 claim-level table before modelling.
+
+| Check | Expected result |
+|---|---:|
+| Every claim-level `covered_loss` is positive | True |
+| Legitimate zero-paid claims are present | 33 |
+| BI covered days equal `max(interruption_days - waiting_period, 0)` | True |
+| `covered_loss = remediation_loss + covered_bi_loss` | True |
+| Deductible is applied exactly once per claim | True |
+| Paid loss respects the per-claim policy limit | True |
+| Paid loss never exceeds policy limit | True |
+| Claim-level paid loss reconciles to annual aggregate paid loss | True |
+
+Teaching point: zero-paid claims are valid insurance outcomes after deductible/limit/waiting-period mechanics. They should not be forced into a positive paid-severity response.
+
+## 3. Worked insurance examples
+
+These values should match the case document, generator logic, and solution notebook.
+
+| Example | Remediation loss | Daily BI loss | Interruption days | Waiting period | Deductible | Policy limit | Ground-up loss | Covered BI loss | Covered loss | After deductible | Paid loss |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Below deductible | 20,000 | 0 | 0 | 2 | 50,000 | 500,000 | 20,000 | 0 | 20,000 | 0 | 0 |
+| Limited payment | 900,000 | 0 | 0 | 2 | 50,000 | 400,000 | 900,000 | 0 | 900,000 | 850,000 | 400,000 |
+| BI waiting not met, other cost payable | 100,000 | 30,000 | 2 | 3 | 50,000 | 500,000 | 160,000 | 0 | 100,000 | 50,000 | 50,000 |
+
+## 4. Stress and trigger validation
 
 | Measure | Expected count |
 |---|---:|
-| Air stress rows | 405 |
-| Air trigger rows | 150 |
-| Water stress rows | 327 |
-| Water trigger rows | 107 |
-| Compound trigger rows | 17 |
+| Air stress rows | 381 |
+| Air trigger rows | 94 |
+| Water stress rows | 338 |
+| Water trigger rows | 73 |
+| Compound trigger rows | 9 |
 | Claims without insured trigger | 0 |
 
 Expected interpretation: environmental stress is more common than qualifying insured triggers. A stress flag is not a claim.
 
-## 3. Experience by occupancy
+## 5. Experience by occupancy
 
-| Occupancy | Exposure | Claims | Paid loss | Claim frequency | Paid severity |
+| Occupancy | Exposure | Claims | Paid loss | Claim frequency per exposure | Paid severity per claim |
 |---|---:|---:|---:|---:|---:|
-| Food Processing | 193.47 | 45 | 5,635,443.67 | 0.23 | 125,232.08 |
-| Hospital | 156.78 | 35 | 8,530,565.74 | 0.22 | 243,730.45 |
-| Manufacturing | 296.42 | 58 | 8,417,143.85 | 0.20 | 145,123.17 |
+| Food Processing | 193.994 | 25 | 458,918.82 | 0.129 | 18,356.75 |
+| Hospital | 158.574 | 28 | 1,463,565.79 | 0.177 | 52,270.21 |
+| Manufacturing | 289.500 | 42 | 1,557,528.01 | 0.145 | 37,084.00 |
 
-Teaching point: the highest total claim count is not necessarily the highest severity or highest risk concentration. Exposure, occupancy, and insured value matter.
+Teaching point: claim count, severity, and contribution to paid loss tell different stories. Hospitals have the highest average paid severity, while manufacturing contributes the most claims and paid loss in the full historical table.
 
-## 4. Experience by region
+## 6. Experience by region
 
-| Region | Exposure | Claims | Paid loss | Claim frequency | Paid severity |
+| Region | Exposure | Claims | Paid loss | Claim frequency per exposure | Paid severity per claim |
 |---|---:|---:|---:|---:|---:|
-| Central Metro | 153.87 | 40 | 4,343,974.92 | 0.26 | 108,599.37 |
-| Coastview | 147.64 | 20 | 4,091,448.86 | 0.14 | 204,572.44 |
-| Drylands | 138.99 | 47 | 9,102,158.03 | 0.34 | 193,662.94 |
-| Northgate | 121.06 | 10 | 1,348,643.16 | 0.08 | 134,864.32 |
-| Riverbend | 85.11 | 21 | 3,696,928.29 | 0.25 | 176,044.20 |
+| Central Metro | 159.014 | 27 | 825,556.66 | 0.170 | 30,576.17 |
+| Coastview | 152.159 | 8 | 138,538.77 | 0.053 | 17,317.35 |
+| Drylands | 141.552 | 43 | 2,266,065.17 | 0.304 | 52,699.19 |
+| Northgate | 105.829 | 8 | 112,482.06 | 0.076 | 14,060.26 |
+| Riverbend | 83.514 | 9 | 137,369.96 | 0.108 | 15,263.33 |
 
-Teaching point: Drylands should appear as an important risk concentration in descriptive analysis.
+Teaching point: Drylands should emerge as the most important descriptive risk concentration in the V2 dataset.
 
-## 5. Expected visual outputs
+## 7. Expected visual outputs
 
-Students should produce at least the following kinds of figures:
+Students should produce visuals that support the actuarial decision. Acceptable examples include:
 
-1. Bar chart comparing environmental stress rows with insured trigger rows.
-2. Claim frequency or paid loss by occupancy or region.
+1. Bar chart comparing stress rows with trigger rows.
+2. Claim count, frequency, or paid loss by occupancy or region.
 3. Scenario aggregate-loss distribution or VaR/TVaR comparison.
-4. Mitigation strategy comparison table or bar chart.
+4. Mitigation strategy comparison table or chart.
 
-Visuals do not need to match the solution exactly, but they must support the actuarial decision rather than merely decorate the notebook.
+Do not reward visuals that are decorative only and do not help explain coverage, pricing, stress, mitigation, or tail risk.
 
-## 6. Frequency model benchmark
+## 8. Frequency model benchmark
 
-The solution notebook uses an exposure-adjusted Poisson GLM with:
+The V2 solution notebook uses an exposure-adjusted Poisson GLM with:
 
-- response: `claim_count`
-- offset: `log(exposure_years)`
-- occupancy and region factors
-- scaled environmental/climate variables
-- stress flags
-- air-water interaction
-- mitigation indicators
+- response: `claim_count`;
+- offset: `log(exposure_years)`;
+- occupancy and region factors;
+- scaled environmental/climate variables;
+- an air-water stress interaction; and
+- mitigation indicators.
 
-Selected solution rate-ratio outputs:
+Diagnostics:
+
+| Diagnostic | Solution value |
+|---|---:|
+| GLM converged | True |
+| Pearson dispersion | 1.329 |
+| Deviance / df | 0.510 |
+| Captured warnings | 0 |
+
+Selected fitted rate-ratio outputs:
 
 | Variable | Coefficient | Rate ratio | Comment |
 |---|---:|---:|---|
-| `air_filtration` | -0.228 | 0.796 | Lower fitted frequency. |
-| `water_treatment` | -0.387 | 0.679 | Lower fitted frequency. |
-| `business_continuity_plan` | -0.282 | 0.754 | Lower fitted frequency. |
+| `turbidity_2` | 0.574 | 1.776 | Higher turbidity is associated with higher fitted claim frequency. |
+| `water_treatment` | -0.525 | 0.592 | Water treatment lowers fitted frequency. |
+| `air_filtration` | -0.427 | 0.652 | Air filtration lowers fitted frequency. |
+| `business_continuity_plan` | -0.431 | 0.650 | BCP lowers fitted frequency. |
+| `air_water_stress_interaction` | 0.512 | 1.669 | Compound stress raises fitted frequency. |
 
-Some stress-flag and interaction coefficients can be unstable because trigger logic and stress flags are highly related in this synthetic case. Students should not over-interpret extreme coefficients mechanically. They should explain the actuarial reason for including a compound-risk term.
+Acceptable student range: a comparable GLM should produce a 2026 baseline expected claim count roughly **15 to 30**. A materially different value needs explanation through model choice.
 
-Acceptable student range: model should produce baseline 2026 expected claim count roughly **45 to 70** if using a comparable exposure-adjusted GLM.
+## 9. Severity model benchmark
 
-## 7. Severity model benchmark
+The V2 reference model uses claim-level positive `covered_loss`, not annual paid severity, as the Gamma response. Paid loss is generated in simulation by applying the deductible and per-claim limit. This avoids invalid Gamma responses while preserving legitimate zero-paid claims.
 
-The solution notebook uses a Gamma GLM with log link for:
+Diagnostics:
 
-`average_paid_severity = aggregate_paid_loss / claim_count`
+| Diagnostic | Solution value |
+|---|---:|
+| Claim-level observations | 95 |
+| Minimum covered loss | 12,878.08 |
+| Zero-paid claims retained | 33 |
+| Gamma GLM converged | True |
+| Gamma dispersion/scale | 0.4688 |
+| Captured warnings | 0 |
 
-for claim-positive rows only, weighted by `claim_count`.
-
-Selected solution multiplicative effects:
+Selected fitted multiplicative effects:
 
 | Variable | Coefficient | Multiplicative effect | Comment |
 |---|---:|---:|---|
-| `log_iv` | 0.475 | 1.608 | Higher insured value increases severity. |
-| `air_filtration` | -0.588 | 0.555 | Lower fitted paid severity. |
-| `water_treatment` | -0.263 | 0.768 | Lower fitted paid severity. |
-| `business_continuity_plan` | -0.379 | 0.685 | Lower fitted paid severity. |
-| `water_stress_flag` | 1.010 | 2.745 | Higher fitted severity under water stress. |
+| `bi_waiting_period_days` | -0.332 | 0.717 | Longer waiting period lowers covered severity in this simplified contract. |
+| `log_insured_value` | 0.465 | 1.593 | Higher insured value increases fitted covered severity. |
+| `pm25_10` | 0.176 | 1.192 | Higher PM2.5 increases fitted covered severity directionally. |
+| `turbidity_2` | 0.092 | 1.097 | Higher turbidity increases fitted covered severity directionally. |
+| `air_water_stress_interaction` | 0.149 | 1.160 | Compound stress raises covered severity directionally. |
 
-Acceptable student range: conditional paid severity predictions should be positive and generally in a plausible range for this dataset; no zero-claim rows should be used as severity observations.
+Acceptable student range: fitted covered severities should be strictly positive and policy terms should be applied after severity simulation.
 
-## 8. Baseline 2026 pricing benchmark
+## 10. Baseline 2026 pricing benchmark
 
-The solution notebook treats the 2026 records as the current annual portfolio snapshot.
+The solution treats 2026 as the current annual portfolio snapshot.
 
 | Metric | Solution value |
 |---|---:|
-| 2026 exposure | 215.174 |
-| Expected claim count | 55.936 |
-| Expected annual paid loss | 10,180,997.71 |
-| Loss cost per exposure | 47,315.19 |
-| Current premium | 13,748,900 |
-| Indicated premium | 14,774,826.01 |
-| Premium adequacy ratio | 0.931 |
+| 2026 policy rows | 250 |
+| 2026 exposure | 214.199 |
+| Expected annual paid loss | 1,579,995.52 |
+| Current premium | 14,130,800 |
+| Indicated premium | 2,486,667.53 |
+| Premium adequacy ratio | 5.681 |
+| VaR99 | 2,886,835.57 |
+| TVaR99 | 3,133,296.59 |
 
-Teaching point: baseline appears underpriced but not catastrophically so. Stress scenarios reveal the larger concern.
+Teaching point: baseline premium is adequate in the V2 benchmark. The committee issue is not current-year baseline inadequacy; it is deterioration under water and compound stress.
 
-## 9. Scenario comparison benchmark
+## 11. Scenario comparison benchmark
 
-| Scenario | Expected annual loss | Current premium | Indicated premium | Adequacy ratio | VaR99 | TVaR99 |
+| Scenario | Expected annual paid loss | Current premium | Indicated premium | Adequacy ratio | VaR99 | TVaR99 |
 |---|---:|---:|---:|---:|---:|---:|
-| Baseline | 10,180,997.71 | 13,748,900 | 14,774,826.01 | 0.93 | 15,538,062.83 | 16,587,144.51 |
-| Air stress | 23,103,033.84 | 13,748,900 | 33,234,877.63 | 0.41 | 30,780,087.38 | 32,095,252.87 |
-| Water stress | 19,458,641.57 | 13,748,900 | 28,028,602.96 | 0.49 | 26,596,913.03 | 28,018,265.43 |
-| Compound stress | 41,237,611.54 | 13,748,900 | 59,141,417.20 | 0.23 | 51,728,461.85 | 53,504,276.49 |
+| Baseline | 1,579,995.52 | 14,130,800 | 2,486,667.53 | 5.68 | 2,886,835.57 | 3,133,296.59 |
+| Air stress | 2,795,165.95 | 14,130,800 | 4,222,625.29 | 3.35 | 4,662,297.31 | 5,019,203.97 |
+| Water stress | 11,233,830.43 | 14,130,800 | 16,277,860.25 | 0.87 | 14,999,369.84 | 15,675,254.10 |
+| Compound stress | 19,741,145.53 | 14,130,800 | 28,431,167.55 | 0.50 | 25,196,709.35 | 25,988,897.73 |
 
-Expected interpretation: compound stress is the most material scenario by both expected loss and tail risk. Air stress is more severe than water stress in the solution benchmark, but both standalone stresses materially reduce premium adequacy.
+Expected interpretation: compound stress is the most material scenario by both expected loss and tail risk. Water stress alone is more material than air stress in the V2 benchmark.
 
 Acceptable student ranges with similar modelling:
 
 | Scenario | Expected loss range | TVaR99 range |
 |---|---:|---:|
-| Baseline | 8M–13M | 14M–20M |
-| Air stress | 18M–29M | 27M–38M |
-| Water stress | 15M–25M | 23M–34M |
-| Compound stress | 32M–50M | 45M–65M |
+| Baseline | 1.2M–2.2M | 2.6M–3.7M |
+| Air stress | 2.1M–3.6M | 4.2M–6.0M |
+| Water stress | 9M–14M | 13M–18M |
+| Compound stress | 16M–24M | 22M–30M |
 
-## 10. Mitigation benchmark under compound stress
+## 12. Scenario TVaR simulation uncertainty
 
-Budget: **8,000,000**.
+Repeated-seed check using six seeds and 8,000 simulations per seed:
 
-The solution compares five manageable candidate strategies. Exact strategy composition may differ if students choose different heuristics. They should still remain within budget and use TVaR99 as the primary decision criterion.
+| Scenario | Mean TVaR99 | Monte Carlo SE | Approx. 95% low | Approx. 95% high | Mean VaR99 |
+|---|---:|---:|---:|---:|---:|
+| Baseline | 3,107,996.48 | 24,275.00 | 3,060,417.48 | 3,155,575.47 | 2,880,558.58 |
+| Air stress | 5,015,744.47 | 14,328.42 | 4,987,660.76 | 5,043,828.17 | 4,664,828.70 |
+| Water stress | 15,593,569.43 | 43,212.70 | 15,508,872.54 | 15,678,266.31 | 14,971,284.23 |
+| Compound stress | 25,919,949.35 | 47,417.81 | 25,827,010.44 | 26,012,888.26 | 25,059,444.50 |
+
+Teaching point: the scenario ranking is not a Monte Carlo artifact; the confidence bands are well separated.
+
+## 13. Mitigation benchmark under compound stress
+
+Budget: **8,000,000** currency units.
+
+The solution compares a finite set of feasible candidate strategies. This is not a proof of global optimality.
 
 | Strategy | Actions selected | Cost | Expected annual loss | Expected-loss reduction | BCR | VaR99 | TVaR99 | TVaR reduction | Post-mitigation adequacy |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Air-focused | 82 | 7,976,000 | 26,914,790.97 | 14,322,820.57 | 1.80 | 33,659,454.93 | 34,605,891.33 | 18,898,385.16 | 0.36 |
-| Water-focused | 63 | 7,989,000 | 30,877,230.96 | 10,360,380.57 | 1.30 | 38,842,397.59 | 40,029,715.05 | 13,474,561.44 | 0.31 |
-| BCP-focused | 137 | 7,078,000 | 28,280,888.37 | 12,956,723.17 | 1.83 | 35,939,728.24 | 37,079,930.31 | 16,424,346.18 | 0.34 |
-| Balanced BCR-ranked | 100 | 7,995,000 | 25,876,548.65 | 15,361,062.89 | 1.92 | 32,345,579.49 | 33,384,167.21 | 20,120,109.28 | 0.37 |
-| Tail-focused | 95 | 7,982,000 | 26,311,525.22 | 14,926,086.32 | 1.87 | 32,815,192.86 | 33,889,146.65 | 19,615,129.85 | 0.36 |
+| No new mitigation | 0 | 0 | 19,741,145.53 | 0.00 | n/a | 25,196,709.35 | 25,988,897.73 | 0.00 | 0.50 |
+| Air priority | 85 | 7,988,000 | 15,697,630.89 | 4,043,514.64 | 0.51 | 20,657,145.39 | 21,509,315.45 | 4,479,582.28 | 0.62 |
+| Water priority | 65 | 7,983,000 | 15,065,957.84 | 4,675,187.69 | 0.59 | 19,742,247.01 | 20,559,437.33 | 5,429,460.40 | 0.65 |
+| BCP priority | 146 | 7,625,000 | 16,350,870.38 | 3,390,275.16 | 0.44 | 21,519,148.61 | 22,306,714.00 | 3,682,183.73 | 0.60 |
+| Balanced BCR | 91 | 7,975,000 | 13,002,128.31 | 6,739,017.22 | 0.85 | 17,383,675.71 | 18,165,898.50 | 7,822,999.23 | 0.75 |
+| Largest reduction first | 78 | 7,972,000 | 13,165,552.95 | 6,575,592.58 | 0.82 | 17,537,823.78 | 18,320,881.18 | 7,668,016.55 | 0.74 |
 
-Solution-selected strategy: **Balanced BCR-ranked**, because it has the lowest simulated TVaR99 among the candidate strategies tested.
+Solution-selected strategy: **Balanced BCR**, because it has the lowest simulated TVaR99 among the candidate strategies evaluated.
 
-Teaching point: students may obtain a different feasible selected strategy if they define candidate portfolios differently. That is acceptable if the strategy is budget-feasible, evaluated through compound stress, and selected primarily on TVaR99.
+## 14. Mitigation ranking stability
 
-## 11. Strong final recommendation should say
+Repeated-seed check using six seeds and 8,000 simulations per strategy:
 
-A high-quality final committee recommendation should include:
+| Strategy | Mean TVaR99 | TVaR SD | Best-rank count | Monte Carlo SE | Approx. 95% low | Approx. 95% high |
+|---|---:|---:|---:|---:|---:|---:|
+| Balanced BCR | 18,063,370.05 | 94,866.01 | 6 | 38,728.89 | 17,987,461.44 | 18,139,278.67 |
+| Largest reduction first | 18,312,340.29 | 127,015.20 | 0 | 51,853.74 | 18,210,706.96 | 18,413,973.62 |
+| Water priority | 20,495,213.80 | 146,908.25 | 0 | 59,975.04 | 20,377,662.72 | 20,612,764.88 |
+| Air priority | 21,382,487.57 | 161,424.41 | 0 | 65,901.24 | 21,253,321.14 | 21,511,654.00 |
+| BCP priority | 22,119,023.64 | 169,136.65 | 0 | 69,049.75 | 21,983,686.13 | 22,254,361.15 |
+| No new mitigation | 25,895,391.89 | 114,259.34 | 0 | 46,646.18 | 25,803,965.38 | 25,986,818.40 |
 
-1. Baseline premium is slightly inadequate under the fitted model.
-2. Compound stress is the most material risk state.
-3. Current premium is deeply inadequate under compound stress.
-4. Mitigation materially reduces expected loss and TVaR but does not fully restore premium adequacy.
-5. AquaAir should combine mitigation requirements, repricing, and monitoring.
-6. Underwriting restrictions or sublimits may be needed for persistently inadequate high-risk segments.
-7. The data are synthetic, the models are simplified, and real deployment would require validation, governance, and external data.
+Teaching point: Balanced BCR has a clear candidate-set advantage in this implementation, but the instructor should still describe this as the best among evaluated candidates, not as the mathematical global optimum.
 
-## 12. Red flags in student outputs
+## 15. Strong final recommendation should say
+
+A high-quality committee recommendation should include:
+
+1. Baseline premium is adequate under the fitted V2 reference model.
+2. Air stress increases loss but does not threaten adequacy in the benchmark.
+3. Water stress materially reduces adequacy below 1.00.
+4. Compound stress is the dominant risk state by expected loss, VaR, and TVaR.
+5. The best evaluated mitigation candidate materially reduces compound-stress TVaR but does not fully restore adequacy.
+6. AquaAir should combine targeted mitigation funding, repricing for stressed water/compound risk, monitoring, and selective underwriting action.
+7. The data are synthetic, the models are simplified, and real deployment would require validation, governance, external data, and dependence modelling.
+
+## 16. Red flags in student outputs
 
 Flag submissions that:
 
 - treat stress flags as claims;
 - ignore the exposure offset;
 - simulate all 750 rows as one current annual portfolio;
-- fit severity using zero-claim rows;
-- skip policy terms;
+- fit Gamma severity to zero paid losses;
+- skip policy-term mechanics;
 - report VaR but not TVaR;
 - select mitigation solely by BCR;
+- claim the mitigation result is a global optimum;
 - exceed the 8,000,000 budget;
 - fail to recompute stress flags after scenario transformations;
 - provide code without actuarial interpretation; or
