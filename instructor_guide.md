@@ -1,19 +1,34 @@
-# ClimateTwin Instructor Guide
+# ClimateTwin V2 Instructor Guide
 
 ## Package position
 
-This guide supports the ClimateTwin: An Actuarial Digital Twin for Air–Water Climate Risk Management classroom case. It is designed to be used with:
+This guide supports **ClimateTwin: An Actuarial Digital Twin for Air–Water Climate Risk Management**. The V2 package is built around the corrected `data_script.py`, which is the single source of truth for the synthetic portfolio, claim-level losses, annual aggregates, scenario rules, and insurance-payment mechanics.
+
+Use this guide with:
 
 - `dataset.csv`
+- `claim_level_data.csv` — instructor-side claim-level table
 - `data_dictionary.md`
 - `case_study.md`
 - `student_notebook.ipynb`
 - `solution.ipynb`
 - `expected_output.md`
 - `rubric.md`
-- `instructions.md`
+- `setup_instructions.md`
+- `case_study.pptx`
 
-The teaching goal is not to make students memorize a model. The goal is to make them reason like P&C actuaries facing emerging climate-linked risk: define coverage, translate environmental information into insured-loss variables, model frequency and severity separately, quantify pricing adequacy, stress the portfolio, and choose mitigation under a budget.
+The teaching goal is not to make students memorize a model. The goal is to make them reason like P&C actuaries facing emerging climate-linked risk: define coverage, translate environmental information into insured-loss variables, model frequency and severity separately, quantify pricing adequacy, stress the portfolio, and choose a feasible mitigation candidate under a budget.
+
+## Prerequisites
+
+Students should have basic familiarity with:
+
+- commercial P&C insurance terms such as premium, deductible, policy limit, claim count, and paid loss;
+- introductory ratemaking concepts, including frequency, severity, pure premium/loss cost, expense provisions, and indicated premium;
+- introductory statistics or predictive modelling, especially GLM interpretation;
+- basic Python/Jupyter use, including reading CSV files and running notebook cells.
+
+The short version can be used with weaker coding groups because routine simulation helpers are supplied.
 
 ## Learning objectives
 
@@ -22,231 +37,225 @@ By the end of the case, students should be able to:
 1. Distinguish environmental hazard indicators from qualifying insured triggers.
 2. Explain how policy terms, exposure, deductibles, limits, and BI waiting periods affect paid loss.
 3. Fit and interpret an exposure-adjusted claim-frequency model.
-4. Fit and interpret a conditional severity model.
+4. Fit and interpret a positive conditional severity model.
 5. Combine frequency and severity into expected loss and indicated premium.
 6. Compare current premium with indicated premium using a premium adequacy ratio.
 7. Run baseline, air-stress, water-stress, and compound-stress scenarios.
 8. Simulate aggregate annual loss and calculate VaR99 and TVaR99.
-9. Choose a mitigation strategy under the 8,000,000 budget using TVaR as the primary criterion.
+9. Compare feasible mitigation candidates under the 8,000,000 budget using TVaR as the primary criterion.
 10. Communicate a practical pricing, underwriting, mitigation, and monitoring recommendation.
 
-## Recommended teaching formats
+## Exact teaching timetable
 
-### Full format: 4.5 to 6 hours
+The proposal separates preparation and independent final submission from the **4.5 classroom hours**. Use the table below for the main full version.
 
-| Segment | Time | Activity |
-|---|---:|---|
-| Pre-class | 45–60 min | Students read `case_study.md`, `data_dictionary.md`, and inspect the CSV. |
-| Launch | 20 min | Instructor introduces AquaAir, coverage logic, scenarios, and committee challenge. |
-| Coverage and data walk-through | 40 min | Students verify grain, stress flags, triggers, claims, and policy terms. |
-| Frequency model | 45–60 min | Students fit Poisson GLM with exposure offset and interpret rate ratios. |
-| Severity model | 45–60 min | Students fit conditional severity model and compare frequency/severity drivers. |
-| Pricing | 35–45 min | Students calculate expected loss, indicated premium, and adequacy. |
-| Stress testing | 60–75 min | Students run four scenarios and compare expected loss, VaR, and TVaR. |
-| Mitigation decision | 60 min | Teams choose a portfolio under budget and defend TVaR-focused choice. |
-| Committee debrief | 30–45 min | Teams present recommendations; instructor compares with solution benchmark. |
+| Segment | Mode | Time | Instructor focus | Student output |
+|---|---|---:|---|---|
+| Pre-class preparation | Independent | 45–60 min | Students read the case and data dictionary before class. | Initial notes on coverage chain and variables. |
+| 1. Launch and coverage framing | In class | 30 min | AquaAir narrative, policy terms, environmental-stress versus insured-trigger distinction. | Coverage-chain explanation. |
+| 2. Data validation and EDA | In class | 30 min | Dataset grain, 2026 portfolio snapshot, trigger/stress counts, zero-paid claims. | Validation table and one descriptive visual. |
+| 3. Frequency and severity modelling | In class | 75 min | Exposure offset, claim-level positive severity, diagnostics, warning interpretation. | Frequency and severity model outputs with interpretation. |
+| 4. Pricing and scenario stress testing | In class | 75 min | Expected loss, indicated premium, adequacy, four scenarios, VaR99, TVaR99. | Scenario comparison table and tail-risk visual. |
+| 5. Mitigation and committee decision | In class | 60 min | Candidate feasible strategies, budget, TVaR ranking, uncertainty, decision trade-offs. | Selected candidate strategy and committee recommendation outline. |
+| Final committee memo | Independent | 60–90 min | Instructor grades using rubric. | Completed notebook and final memo. |
 
-### Short format: 90 to 120 minutes
+Total in-class time: **270 minutes = 4.5 hours**.
 
-Give students the fitted model specification or selected solution cells. Focus on:
+## Short teaching version
 
-1. Coverage interpretation.
-2. Baseline premium adequacy.
-3. Scenario comparison.
-4. VaR/TVaR.
-5. Mitigation choice.
-6. Final committee recommendation.
+For a 90–120 minute version, give students fitted model cells or pre-run outputs. The short version should focus on:
 
-### Exam or assignment format
+1. coverage interpretation;
+2. baseline adequacy;
+3. scenario comparison;
+4. VaR/TVaR interpretation;
+5. candidate mitigation choice; and
+6. committee recommendation.
 
-Give `case_study.md`, `dataset.csv`, `data_dictionary.md`, and `student_notebook.ipynb`. Ask students to submit:
+Students should not spend the short session writing routine simulation machinery.
 
-1. completed notebook;
-2. short Climate Risk Committee memo; and
-3. one-page limitation statement.
+## Class launch script
 
-## Instructor preparation checklist
+AquaAir insures hospitals, manufacturing facilities, and food-processing facilities. Management is worried that deteriorating air and water quality may increase claims and create underpriced tail risk. However, the contract does not pay simply because pollution or contamination readings are bad. There must be a qualifying insured trigger, and the payment depends on exposure, coverage terms, deductibles, limits, BI waiting periods, and mitigation.
 
-Before class:
-
-1. Confirm all files are in one folder.
-2. Run `data_script.py` once and verify it recreates `dataset.csv`.
-3. Open and run `solution.ipynb` from start to finish.
-4. Review `expected_output.md` so you know the approximate benchmark numbers.
-5. Decide whether students will work individually or in teams.
-6. Decide whether you will grade code correctness, actuarial interpretation, or both.
-7. Decide whether to disclose that the dataset is synthetic before or after the first descriptive exercise. Recommended: disclose it immediately, but do not disclose the DGP coefficients.
-
-## Suggested class launch script
-
-AquaAir insures hospitals, manufacturing facilities, and food-processing facilities. Management is worried that deteriorating air and water quality may increase claims and create underpriced tail risk. However, the insurance contract does not pay simply because pollution readings are bad. There must be a qualifying insured event, and the amount paid depends on exposure, coverage terms, deductibles, limits, and mitigation.
-
-Your job is to decide whether the current portfolio is adequately priced, how it behaves under air, water, and compound stress, and which mitigation actions should be funded under an 8,000,000 budget.
+Your job is to decide whether the current portfolio is adequate, how it behaves under air, water, and compound stress, and which candidate mitigation strategy should be funded under an 8,000,000 budget.
 
 The committee does not want a perfect academic model. It wants a defensible actuarial decision.
 
-## Core case narrative
+## V2 data-generating process overview
 
-The case follows this chain:
+The dataset contains 750 policy-location-year rows: 250 synthetic commercial locations across 2024–2026. `claim_level_data.csv` contains the 95 generated claim-level records used to create the annual aggregates in `dataset.csv`.
 
-Environmental condition → stress flag → qualifying insured trigger → claim count → covered loss → paid loss → premium adequacy → risk decision
-
-The most important student misconception is to jump directly from environmental stress to claims. The dataset deliberately separates:
-
-- `air_stress_flag` from `air_trigger_flag`
-- `water_stress_flag` from `water_trigger_flag`
-- `compound_trigger_flag` from merely having bad air and bad water readings
-
-Students should learn that exposure and coverage definitions are part of the actuarial model, not administrative details.
-
-## Data-generating process overview
-
-The dataset contains 750 policy-location-year rows: 250 synthetic commercial locations across policy years 2024, 2025, and 2026. The data are deterministic synthetic data generated from `data_script.py` using a fixed seed and SHA-256-derived pseudo-random streams.
-
-The DGP intentionally embeds:
+The V2 generator embeds:
 
 1. location-level region and occupancy structure;
-2. policy terms including insured value, deductible, limit, BI waiting period, current premium, and exposure;
-3. air and water environmental indicators;
-4. climate variables: temperature, rainfall, and drought;
-5. environmental stress thresholds;
-6. separate probabilistic qualifying insured triggers;
-7. exposure-adjusted Poisson claim frequency;
-8. Lognormal claim-level severity before financial terms;
-9. per-claim deductible and limit application;
+2. policy terms including insured value, deductible, per-claim limit, BI waiting period, current premium, and exposure;
+3. air and water indicators plus climate variables;
+4. transparent stress thresholds;
+5. separate probabilistic qualifying insured triggers;
+6. exposure-adjusted Poisson claim frequency;
+7. positive claim-level covered severity;
+8. per-claim policy mechanics from ground-up loss to covered loss to paid loss;
+9. legitimate zero-paid claims when deductible/waiting-period mechanics eliminate payment;
 10. mitigation effects on frequency and severity;
-11. a positive hidden compound-risk mechanism; and
-12. a current-premium structure that does not fully price emerging compound environmental risk.
+11. a positive compound-risk mechanism; and
+12. current premium that does not fully price stressed water/compound risk.
 
-Do not disclose the detailed DGP coefficients to students before they complete the analysis. You may disclose the high-level design after the debrief.
+Do not disclose detailed DGP coefficients before students complete the analysis. Disclose the high-level design during debrief.
 
-## Hidden DGP teaching explanation
+## Correct V2 insurance mechanics
 
-### Frequency mechanism
+For every simulated claim:
 
-Claim counts are generated using an exposure-adjusted Poisson structure. The claim rate increases when qualifying air or water triggers occur and increases further under a compound trigger. Occupancy, temperature, drought, rainfall, and mitigation also affect the expected rate. Mitigation reduces frequency, especially when it directly addresses the relevant hazard.
+1. **Ground-up loss** equals remediation loss plus total BI loss before waiting-period treatment.
+2. **Covered BI loss** equals daily BI loss multiplied by days above the waiting period.
+3. **Covered loss** equals remediation loss plus covered BI loss.
+4. **Loss after deductible** equals `max(covered_loss - deductible, 0)`.
+5. **Paid loss** equals `min(loss_after_deductible, policy_limit)`.
 
-### Severity mechanism
+The deductible is applied once per claim. The policy limit is applied after the deductible. A claim may have positive covered loss but zero paid loss.
 
-Claim-level ground-up losses are generated using a Lognormal severity structure. Severity depends on occupancy, insured value, trigger type, climate pressure, mitigation, and whether the BI waiting period is met. The deductible and per-claim limit are then applied to produce insurer-paid loss.
+## Required worked insurance examples
 
-### Premium mechanism
+Use these during class before modelling.
 
-Current premium is based on more conventional portfolio rating variables and partial mitigation credits. It does not fully price the hidden compound climate interaction. This creates a realistic teaching tension: some segments may look acceptable historically but inadequate under forward-looking stress.
+| Example | Explanation | Paid-loss result |
+|---|---|---:|
+| Loss below deductible | A 20,000 covered remediation loss with a 50,000 deductible produces no insurer payment. | 0 |
+| Payment constrained by policy limit | A 900,000 covered loss less a 50,000 deductible gives 850,000 after deductible, but a 400,000 limit caps payment. | 400,000 |
+| BI waiting period not met, other cost payable | A two-day BI interruption with a three-day waiting period has no covered BI, but a 100,000 remediation cost is still eligible; after a 50,000 deductible, paid loss is 50,000. | 50,000 |
 
-### Scenario mechanism
+These examples must match `case_study.md`, `solution.ipynb`, and `data_script.py`.
 
-The required scenarios transform environmental variables and then recompute stress flags. They do not force every location into claim. This is important: a scenario changes risk conditions, but insurance loss still passes through coverage, exposure, frequency, severity, and financial terms.
+## Model diagnostics and warnings
 
-## Instructor answer key — conceptual checkpoints
+The V2 solution intentionally avoids blanket warning suppression. In the reference run:
+
+- the Poisson frequency GLM converges;
+- Pearson dispersion is about 1.329;
+- deviance/df is about 0.510;
+- the Gamma covered-severity GLM converges;
+- Gamma scale is about 0.4688;
+- no model-fitting warnings are captured.
+
+If students see warnings, ask them to identify the source rather than hiding the warnings. Common causes include unstable interaction terms, collinearity among environmental indicators, sparse trigger categories, invalid severity responses, or using all 750 rows as one portfolio-year.
+
+## Instructor answer checkpoints
 
 ### Checkpoint 1: Data grain
 
-Expected answer: one row is one policy-location-year. There are 750 rows, 250 unique locations, and three years. For annual portfolio simulation, use only 2026 records so the same location is not counted three times.
+Expected answer: one row is one policy-location-year. There are 750 rows, 250 unique locations, and three years. Model fitting can use all years, but annual portfolio simulation should use the 2026 snapshot only.
 
 ### Checkpoint 2: Hazard versus claim
 
-Expected answer: environmental stress flags identify adverse conditions. Insured trigger flags represent qualifying covered events. Claims occur only when a qualifying insured trigger exists.
+Expected answer: stress flags identify adverse environmental conditions. Trigger flags represent qualifying insured events. Claims occur only when an insured trigger exists.
 
-### Checkpoint 3: Frequency model
+### Checkpoint 3: Zero-paid claims
 
-Expected answer: the model should use `claim_count` as the response and include `log(exposure_years)` as an offset. Students should interpret coefficients as rate ratios. They should include at least one compound-risk term.
+Expected answer: 33 claim-level records have zero paid loss. These are valid payment outcomes after contract mechanics, not bad data.
 
-### Checkpoint 4: Severity model
+### Checkpoint 4: Frequency model
 
-Expected answer: severity should be conditional on claims. A reasonable response is `aggregate_paid_loss / claim_count` for rows with claims. A Gamma GLM with log link or Lognormal model is acceptable.
+Expected answer: use `claim_count` with `log(exposure_years)` as an offset. Interpret coefficients as rate ratios and include a compound-risk term.
 
-### Checkpoint 5: Pricing
+### Checkpoint 5: Severity model
 
-Expected answer: expected loss equals expected frequency multiplied by expected severity. Indicated premium uses fixed expense, variable expense ratio, and profit/contingency. Premium adequacy below 1 indicates underpricing.
+Expected answer: model positive claim-level `covered_loss` or another defensible positive conditional severity response. Do not fit a Gamma model to zero paid losses.
 
-### Checkpoint 6: Stress testing
+### Checkpoint 6: Pricing
 
-Expected answer: run baseline, air stress, water stress, and compound stress. Recompute stress flags after scenario transformations. Compare expected loss, indicated premium, VaR99, and TVaR99.
+Expected answer: expected paid loss is combined with fixed expense, variable expense, and profit/contingency to calculate indicated premium. Adequacy below 1.00 indicates underpricing.
 
-### Checkpoint 7: Mitigation
+### Checkpoint 7: Stress testing
 
-Expected answer: choose a feasible portfolio under 8,000,000. The primary selection criterion is lowest TVaR99, not highest benefit-cost ratio. Students should also report expected-loss reduction and premium adequacy after mitigation.
+Expected answer: run baseline, air stress, water stress, and compound stress. Recompute stress flags after transformations. Compare expected loss, indicated premium, VaR99, and TVaR99.
+
+### Checkpoint 8: Mitigation
+
+Expected answer: compare a manageable set of candidate feasible strategies under the 8,000,000 budget. Select the candidate with the lowest simulated TVaR99 among those evaluated. Do not claim a global mathematical optimum.
+
+## Expected benchmark interpretation
+
+The V2 reference solution produces the following high-level story:
+
+- Baseline 2026 premium is adequate under the fitted reference model.
+- Air stress increases expected loss and TVaR but remains adequate in the reference benchmark.
+- Water stress materially reduces adequacy below 1.00.
+- Compound stress is the dominant risk state by expected loss, VaR, and TVaR.
+- The best evaluated mitigation candidate materially reduces TVaR but does not fully restore compound-stress adequacy.
+- AquaAir should combine targeted mitigation funding with repricing, monitoring, and selective underwriting controls.
+
+## Candidate mitigation strategy construction
+
+The solution constructs action-level candidates where mitigation is absent and upgrade cost is positive. It compares finite feasible strategies such as:
+
+- no new mitigation;
+- air priority;
+- water priority;
+- BCP priority;
+- balanced benefit-cost ranking; and
+- largest expected reduction first.
+
+This construction is intentionally manageable for teaching. It demonstrates budgeted actuarial decision-making without turning the case into a large integer-programming exercise.
+
+## Simulation uncertainty
+
+Use repeated seeds to show whether tail-risk rankings are stable. In the V2 solution, compound stress is clearly the highest-risk scenario, and the Balanced BCR candidate has the lowest mean TVaR among the candidate strategies evaluated. The repeated-seed check supports this ranking, but it still does not prove global optimality over every possible mitigation combination.
 
 ## Common misconceptions and corrections
 
 | Misconception | Correction |
 |---|---|
 | Bad environmental readings are claims. | They are hazard indicators. Claims require qualifying insured triggers. |
-| Use all 750 rows for one annual portfolio simulation. | Fit models on all rows, but use 2026 as the current annual portfolio snapshot. |
-| Ignore exposure because all policies are roughly annual. | Exposure varies and should be included as an offset in frequency modelling. |
-| Model aggregate loss directly and skip frequency/severity. | The case objective is to teach frequency-severity decomposition. |
-| Use paid loss for rows with zero claims in severity model. | Conditional severity should use claim-positive rows only. |
-| The highest BCR mitigation is automatically best. | The decision criterion is lowest TVaR99 under budget. BCR is supporting evidence. |
-| Compound stress equals air stress plus water stress. | Compound risk can interact nonlinearly. |
-| Current premium is the right answer because it is in the data. | It is a baseline market/current rating value; the task is to test adequacy. |
-| A statistically insignificant coefficient is irrelevant. | With synthetic classroom data, focus on actuarial direction, materiality, and model purpose. |
-| One model output is enough for management. | Management needs expected loss, tail risk, adequacy, mitigation impact, and limitations. |
+| Stress flags and triggers are the same. | Stress flags are environmental screens; triggers are insured-event indicators. |
+| Zero-paid claims are data errors. | They are valid outcomes after deductible and waiting-period mechanics. |
+| Use all 750 rows for one annual simulation. | Fit on all rows; simulate the 2026 current portfolio snapshot. |
+| Exposure can be ignored. | Frequency modelling should use an exposure offset. |
+| Aggregate loss modelling alone is enough. | The teaching objective is frequency-severity decomposition. |
+| Gamma paid severity can include zero paid losses. | Gamma response must be positive; use covered severity or another valid approach. |
+| Compound stress equals air plus water. | Compound stress includes interaction and changes the portfolio risk state. |
+| Highest BCR is automatically best. | TVaR99 is the primary candidate-selection criterion. |
+| Candidate comparison proves a global optimum. | It identifies the best among evaluated feasible candidates only. |
+| One simulation seed is definitive. | Tail-risk rankings should be checked for Monte Carlo stability. |
 
 ## Discussion prompts
 
-Use these during the debrief:
+1. What exactly converts an environmental hazard into an insured claim?
+2. Why can a claim have positive covered loss but zero paid loss?
+3. Which variable most changed frequency in your model?
+4. Which variable most changed severity in your model?
+5. Why are frequency and severity not interchangeable?
+6. Which scenario most changed expected loss?
+7. Which scenario most changed TVaR?
+8. Why does water stress matter more than air stress in this V2 benchmark?
+9. Does mitigation solve pricing adequacy by itself?
+10. What real-world validation would AquaAir need before deployment?
 
-1. What exactly converts an environmental hazard into an insured loss?
-2. Which variable did your model treat as most important for frequency?
-3. Which variable did your model treat as most important for severity?
-4. Did frequency and severity have the same drivers?
-5. Which scenario produced the largest expected loss?
-6. Which scenario produced the largest TVaR?
-7. Why might a strategy with high expected-loss reduction fail to reduce TVaR enough?
-8. Would you recommend repricing, mandatory mitigation, coverage sublimits, monitoring, or risk selection?
-9. What would you tell a regulator or board member about limitations?
-10. What real-world data would AquaAir need before deploying this framework?
-
-## Expected modelling choices
-
-Acceptable baseline choices:
-
-- Poisson GLM for frequency with log exposure offset.
-- Gamma GLM with log link for average paid severity.
-- Claim-count weights for severity rows.
-- Frequency-severity expected loss calculation.
-- Monte Carlo simulation for aggregate annual paid loss.
-- VaR99 and TVaR99 from the simulated aggregate distribution.
-- Scenario transformations exactly as stated in the case document.
-- Greedy or manageable candidate-portfolio mitigation search, provided it is documented and budget-constrained.
-
-Do not penalize students for not matching every numerical result exactly if their approach is defensible, reproducible, and aligned with the case logic. Use `expected_output.md` as a benchmark range rather than a rigid answer key, except for basic data validation numbers.
-
-## Recommended debrief sequence
-
-1. Ask teams to explain the coverage chain before showing numerical results.
-2. Show the stress-versus-trigger counts to reinforce the central misconception.
-3. Compare frequency model choices.
-4. Compare severity model choices.
-5. Put scenario expected loss and TVaR side by side.
-6. Ask whether compound stress is merely additive.
-7. Compare mitigation portfolios and highlight difference between BCR and TVaR optimization.
-8. End with committee recommendations and limitations.
-
-## Instructor grading emphasis
+## Grading emphasis
 
 Strong submissions will:
 
 - preserve the coverage distinction throughout;
+- calculate the three insurance examples correctly;
 - use exposure correctly;
 - fit separate frequency and severity models;
+- use positive severity responses;
 - calculate pricing metrics correctly;
 - compare all four scenarios;
-- simulate aggregate loss with a fixed seed;
-- choose mitigation under budget based on TVaR99;
-- communicate results in actuarial language; and
-- state limitations clearly.
+- simulate aggregate annual loss reproducibly;
+- choose mitigation under budget based on TVaR99 among evaluated candidates;
+- discuss simulation uncertainty; and
+- communicate limitations clearly.
 
-Weak submissions usually fail because they treat environmental stress as claims, ignore exposure, use all three years as a single portfolio, skip severity modelling, select mitigation only by BCR, or present code without a business recommendation.
+Weak submissions usually fail because they treat environmental stress as claims, ignore exposure, use all three years as a single annual portfolio, fit Gamma severity to zero paid losses, select mitigation only by BCR, claim a global optimum, or present code without a business recommendation.
 
 ## Optional extensions
 
-If time permits, advanced students may explore:
+Use only after the core case is completed:
 
-1. Negative Binomial frequency model.
-2. Alternative severity distribution.
-3. Model validation and train/test split.
+1. Negative Binomial frequency sensitivity.
+2. Alternative severity distributions.
+3. Train/test or cross-validation exercise.
 4. Segment-level underwriting actions.
 5. Alternative budgets.
 6. Alternative VaR/TVaR confidence levels.
@@ -254,5 +263,3 @@ If time permits, advanced students may explore:
 8. Parameter uncertainty.
 9. Simple reinsurance layer.
 10. Credibility or Bayesian updating.
-
-These are extensions only. They should not replace the core case.
