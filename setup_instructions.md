@@ -1,25 +1,25 @@
-# ClimateTwin Setup Instructions
+# ClimateTwin V2 Setup Instructions
 
-These instructions help students run the ClimateTwin case package in Jupyter Notebook, JupyterLab, VS Code, or Google Colab.
-
----
+These instructions help students and instructors run the ClimateTwin case package in Jupyter Notebook, JupyterLab, VS Code, or Google Colab.
 
 ## 1. Files in the package
 
-Keep these files together in one folder:
+Keep all files together in one folder:
 
 ```text
 ClimateTwin/
 ├── dataset.csv
+├── claim_level_data.csv          # instructor-side; needed for solution/regeneration checks
 ├── data_dictionary.md
 ├── case_study.md
 ├── student_notebook.ipynb
-├── solution.ipynb              # instructor-only
-├── data_script.py              # instructor-only generator
-├── instructor_guide.md          # instructor-only
-├── expected_output.md           # instructor-only or post-class
+├── solution.ipynb                # instructor-only
+├── data_script.py                # instructor-only generator
+├── instructor_guide.md           # instructor-only
+├── expected_output.md            # instructor-only or post-class
 ├── rubric.md
-└── instructions.md
+├── setup_instructions.md
+└── case_study.pptx
 ```
 
 Students normally receive:
@@ -29,42 +29,50 @@ dataset.csv
 case_study.md
 data_dictionary.md
 student_notebook.ipynb
-instructions.md
+setup_instructions.md
 rubric.md
 ```
 
 Instructors retain:
 
 ```text
-solution.ipynb
+claim_level_data.csv
 data_script.py
+solution.ipynb
 instructor_guide.md
 expected_output.md
+case_study.pptx
 ```
 
----
+## 2. Validated environment
 
-## 2. Recommended Python environment
+The V2 solution was validated in the following environment:
 
-Recommended versions:
+| Component | Validation version |
+|---|---|
+| Python | 3.13.5 |
+| numpy | 2.3.5 |
+| pandas | 2.2.3 |
+| matplotlib | 3.10.8 |
+| statsmodels | 0.14.6 |
+| jupyterlab | 4.5.3 |
+| notebook | 7.5.3 |
+| nbclient | 0.10.4 |
+
+Recommended student environment:
 
 | Package | Recommended version |
 |---|---|
 | Python | 3.10 or newer |
-| numpy | 1.26+ |
+| numpy | 1.26+ or 2.x |
 | pandas | 2.0+ |
 | matplotlib | 3.7+ |
 | statsmodels | 0.14+ |
-| jupyter | 1.0+ or JupyterLab 4+ |
+| jupyterlab | 4+ |
 | notebook | 7+ |
+| nbclient | 0.10+ |
 
-The notebooks use only common Python data-science packages.
-
----
-
-## 3. Local setup with venv
-
-Open a terminal in the folder where you want the case files.
+## 3. Local setup with `venv`
 
 ### Windows PowerShell
 
@@ -72,8 +80,8 @@ Open a terminal in the folder where you want the case files.
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-pip install numpy pandas matplotlib statsmodels jupyter notebook nbclient
-jupyter notebook
+pip install numpy pandas matplotlib statsmodels jupyterlab notebook nbclient
+jupyter lab
 ```
 
 ### macOS / Linux
@@ -82,26 +90,22 @@ jupyter notebook
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-pip install numpy pandas matplotlib statsmodels jupyter notebook nbclient
-jupyter notebook
+pip install numpy pandas matplotlib statsmodels jupyterlab notebook nbclient
+jupyter lab
 ```
 
 Then open `student_notebook.ipynb`.
-
----
 
 ## 4. Local setup with conda
 
 ```bash
 conda create -n climatetwin python=3.11 -y
 conda activate climatetwin
-pip install numpy pandas matplotlib statsmodels jupyter notebook nbclient
-jupyter notebook
+pip install numpy pandas matplotlib statsmodels jupyterlab notebook nbclient
+jupyter lab
 ```
 
 Then open `student_notebook.ipynb`.
-
----
 
 ## 5. Running in VS Code
 
@@ -109,11 +113,9 @@ Then open `student_notebook.ipynb`.
 2. Install VS Code.
 3. Install the Python and Jupyter extensions.
 4. Open the folder containing the ClimateTwin files.
-5. Select the Python environment or conda environment created above.
+5. Select the Python environment created above.
 6. Open `student_notebook.ipynb`.
 7. Run cells from top to bottom.
-
----
 
 ## 6. Running in Google Colab
 
@@ -121,30 +123,26 @@ Then open `student_notebook.ipynb`.
 2. Upload `student_notebook.ipynb`.
 3. Upload `dataset.csv` using the file panel.
 4. Make sure `dataset.csv` appears in the same runtime folder as the notebook.
-5. Run the setup cell.
+5. Run the setup/import cell.
 
-If the notebook cannot find the dataset, use:
+If the notebook cannot find the dataset, run:
 
 ```python
 from google.colab import files
 uploaded = files.upload()
 ```
 
-then upload `dataset.csv` and rerun the data-loading cell.
+Upload `dataset.csv`, then rerun the data-loading cell. Colab runtimes are temporary, so download your completed notebook before closing the session.
 
-Colab runtimes are temporary. Download your completed notebook before closing the session.
+## 7. Folder-path requirement
 
----
-
-## 7. Folder structure requirement
-
-The notebook expects:
+The student notebook expects:
 
 ```python
 DATA_PATH = Path("dataset.csv")
 ```
 
-So `dataset.csv` must be in the same folder as `student_notebook.ipynb`, unless you change the path manually.
+So `dataset.csv` must be in the same folder as the notebook unless you change the path manually.
 
 Correct:
 
@@ -153,51 +151,16 @@ ClimateTwin/student_notebook.ipynb
 ClimateTwin/dataset.csv
 ```
 
-Incorrect:
+Incorrect unless the code is changed:
 
 ```text
 ClimateTwin/student_notebook.ipynb
 ClimateTwin/data/dataset.csv
 ```
 
-unless the code is changed to:
+## 8. Student quick package test
 
-```python
-DATA_PATH = Path("data/dataset.csv")
-```
-
----
-
-## 8. Reproducibility
-
-Use the provided seed in the notebook:
-
-```python
-SEED = 20260908
-rng = np.random.default_rng(SEED)
-```
-
-Monte Carlo results can change if the seed, number of simulations, or simulation method changes. Your results should still be directionally consistent with the expected-output ranges.
-
----
-
-## 9. Instructor-only dataset regeneration
-
-Instructors can regenerate the exact CSV using:
-
-```bash
-python data_script.py
-```
-
-The script uses only the Python standard library and a fixed seed. It recreates the same `dataset.csv` byte-for-byte.
-
-Students do not need to run `data_script.py`.
-
----
-
-## 10. Quick package test
-
-After installation, run this in Python or in the first notebook cell:
+Run this in the first notebook cell:
 
 ```python
 import numpy as np
@@ -216,6 +179,7 @@ df = pd.read_csv("dataset.csv")
 print(df.shape)
 print(df["location_id"].nunique())
 print(df["claim_count"].sum())
+print((df["claim_count"] > 0).sum())
 ```
 
 Expected output:
@@ -223,20 +187,72 @@ Expected output:
 ```text
 (750, 35)
 250
-138
+95
+71
 ```
 
----
+## 9. Instructor validation checks
 
-## 11. Troubleshooting
+Instructors should also check the claim-level table:
 
-### Problem: `FileNotFoundError: dataset.csv`
+```python
+annual = pd.read_csv("dataset.csv")
+claims = pd.read_csv("claim_level_data.csv")
 
-Fix: Put `dataset.csv` in the same folder as the notebook, or update `DATA_PATH`.
+print(claims.shape)
+print((claims["paid_loss"] == 0).sum())
+print(round(claims["paid_loss"].sum(), 2))
+print(round(annual["aggregate_paid_loss"].sum(), 2))
+```
 
-### Problem: `ModuleNotFoundError: statsmodels`
+Expected output:
 
-Fix:
+```text
+(95, 18)
+33
+3480012.62
+3480012.62
+```
+
+## 10. Reproducibility
+
+The student notebook uses fixed seeds for simulation. Monte Carlo results can change slightly if the seed, number of simulations, or simulation method changes. Directional conclusions should remain consistent:
+
+- compound stress should be the largest risk state;
+- water stress should be more material than air stress in the V2 reference benchmark;
+- mitigation should reduce but not fully eliminate stressed tail risk.
+
+## 11. Instructor-only dataset regeneration
+
+Instructors can regenerate both `dataset.csv` and `claim_level_data.csv` using:
+
+```bash
+python data_script.py
+```
+
+The script uses only the Python standard library and a fixed deterministic seed. It should reproduce the same V2 files.
+
+Students do not need to run `data_script.py`.
+
+## 12. Running the instructor solution end to end
+
+From the package folder:
+
+```bash
+jupyter nbconvert --to notebook --execute solution.ipynb --output solution_executed_check.ipynb
+```
+
+The executed notebook should complete without blanket warning suppression. In the V2 reference run, the frequency and severity GLMs both converged and captured zero warnings.
+
+## 13. Troubleshooting
+
+### `FileNotFoundError: dataset.csv`
+
+Put `dataset.csv` in the same folder as the notebook, or update `DATA_PATH`.
+
+### `ModuleNotFoundError: statsmodels`
+
+Run:
 
 ```bash
 pip install statsmodels
@@ -244,39 +260,43 @@ pip install statsmodels
 
 Then restart the notebook kernel.
 
-### Problem: Notebook uses the wrong Python environment
+### Notebook uses the wrong Python environment
 
-Fix: In Jupyter or VS Code, change the notebook kernel to the environment where packages were installed.
+In Jupyter or VS Code, change the notebook kernel to the environment where packages were installed.
 
-### Problem: Plots do not appear
+### Plots do not appear
 
-Fix: Restart the kernel and rerun cells from the top. In Jupyter, make sure the plotting cell is executed.
+Restart the kernel and rerun cells from the top.
 
-### Problem: Monte Carlo results differ slightly
+### Monte Carlo results differ slightly
 
-Fix: Confirm the random seed and number of simulations. Small simulation differences are acceptable; large directional differences usually indicate a modelling or scenario-transformation error.
+Confirm the random seed and number of simulations. Small differences are acceptable. Large directional differences usually indicate a modelling or scenario-transformation error.
 
-### Problem: GLM produces warnings or unstable coefficients
+### GLM produces warnings or unstable coefficients
 
-Fix: This can happen with correlated synthetic indicators and sparse interaction categories. Students should focus on actuarial interpretation, prediction, and scenario results rather than over-interpreting every coefficient.
+Do not hide warnings automatically. Check whether the response was valid, the severity response was positive, the exposure offset was included, the formula created sparse interaction cells, or the predictors are strongly correlated.
 
-### Problem: Colab session lost uploaded files
+### Gamma model fails
 
-Fix: Upload `dataset.csv` again. Colab runtimes reset files when the session restarts.
+Do not fit a Gamma model to zero paid losses. Use positive claim-level `covered_loss` or a defensible positive conditional severity response.
 
----
+### Colab session lost uploaded files
 
-## 12. Submission checklist for students
+Upload `dataset.csv` again. Colab runtimes reset files when the session restarts.
+
+## 14. Student submission checklist
 
 Before submitting:
 
 - The notebook runs from top to bottom.
-- Dataset validation numbers match: 750 rows, 250 locations, 138 claims.
+- Dataset validation numbers match: 750 rows, 250 locations, 95 claims, 71 claim-positive policy-years.
 - Frequency model includes exposure offset.
-- Severity model uses claim-positive rows only.
+- Severity model uses a positive conditional severity response.
+- Policy terms are applied correctly.
 - Baseline premium adequacy is calculated.
 - All four scenarios are evaluated.
 - VaR99 and TVaR99 are reported.
 - Mitigation strategy stays within 8,000,000.
-- Final committee recommendation is completed.
+- Mitigation is chosen from feasible candidates using TVaR99 as the main criterion.
+- The final committee recommendation is completed.
 - Limitations are stated clearly.
