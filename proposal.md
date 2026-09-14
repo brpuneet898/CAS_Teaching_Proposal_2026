@@ -8,9 +8,11 @@ ClimateTwin: An Actuarial Digital Twin for Air–Water Climate Risk Management
 
 ClimateTwin is a compact, scenario-based actuarial case in which students act as the pricing and risk team for AquaAir General Insurance, a fictional insurer writing commercial property and business interruption coverage with a defined environmental impairment endorsement for hospitals, manufacturing facilities, and food-processing facilities.
 
+In this teaching material, **"digital twin" is used in a deliberately limited pedagogical sense**: ClimateTwin is a reproducible synthetic portfolio and scenario simulator that represents how a defined insurer's loss distribution changes when environmental conditions, policy terms, and mitigation assumptions change. It is not a real-time physical twin, does not ingest live sensor feeds, and is not intended to reproduce all operational features of an insurer or city.
+
 The case focuses on one practical question: How should an insurer translate deteriorating air and water conditions into defensible frequency, severity, pricing, tail-risk, and mitigation decisions for a commercial portfolio?
 
-Students work with a synthetic policy-location-year dataset and a ready-to-run notebook. They estimate exposure-adjusted claim frequency and conditional claim severity, calculate expected loss cost and indicated premium, simulate aggregate annual portfolio loss, measure VaR and TVaR, test premium adequacy under climate stress, and evaluate the financial value of mitigation.
+Students work with a synthetic policy-location-year dataset and a ready-to-run notebook. They estimate exposure-adjusted claim frequency and conditional claim severity, calculate expected loss cost and indicated premium, simulate aggregate annual portfolio loss, measure VaR and TVaR, test premium adequacy under climate stress, and evaluate the financial value of a defined set of mitigation strategies.
 
 The core case is deliberately limited to four scenarios:
 
@@ -23,7 +25,7 @@ The teaching cycle is:
 
 Observe → Model → Price → Stress → Mitigate → Reprice
 
-Advanced topics such as spatial models, copulas, alternative dependence structures, and adaptive optimization are retained only as optional extensions. The first release is therefore designed as a minimum viable classroom package that can be executed, taught, assessed, and piloted, rather than as a broad conceptual climate-risk framework.
+The core classroom materials, student workflow, solution workflow, assessment structure, and reproducible simulation framework have been implemented in the first package and are being synchronized in V2 to the corrected data-generating process and review requirements. Advanced topics such as spatial models, copulas, alternative dependence structures, and adaptive optimization remain optional extensions rather than claims of the core simulator.
 
 ## 2. Insurance Setting and Coverage Architecture
 
@@ -125,10 +127,10 @@ By the end of the case, students should be able to:
    Distinguish environmental hazard from exposure, vulnerability, trigger, covered claim, and insurer-paid loss.
 
 2. Model exposure-adjusted claim frequency.  
-   Estimate claim frequency using an actuarial count model with an exposure offset and interpret the effect of occupancy, climate, environmental, and mitigation variables.
+   Estimate claim frequency using an actuarial count model with an exposure offset and interpret the fitted effects of relevant portfolio and environmental variables.
 
 3. Model conditional claim severity.  
-   Estimate claim severity conditional on a claim occurring and explain the influence of insured value, occupancy, trigger type, and mitigation.
+   Estimate **claim-level severity conditional on a claim occurring**, distinguish claim-level severity from policy-year aggregate loss, and explain the influence of insured value, occupancy, trigger type, policy terms, and mitigation.
 
 4. Calculate loss cost and indicated premium.  
    Combine frequency and severity into expected loss cost and apply a transparent expense/profit structure to produce an indicated premium.
@@ -137,13 +139,13 @@ By the end of the case, students should be able to:
    Simulate annual portfolio losses and calculate VaR and TVaR under baseline and stress conditions.
 
 6. Evaluate premium adequacy under stress.  
-   Compare current premium with stressed expected loss and indicated premium and identify where the portfolio becomes underpriced.
+   Compare current premium with stressed expected loss and indicated premium and identify where the portfolio becomes underpriced under the stated assumptions.
 
 7. Evaluate mitigation financially.  
-   Quantify expected-loss reduction, benefit-cost ratio, and tail-risk reduction from mitigation.
+   Quantify expected-loss reduction, benefit-cost ratio, and tail-risk reduction for the **candidate mitigation portfolios evaluated**.
 
 8. Make and communicate an actuarial recommendation.  
-   Defend pricing, underwriting, mitigation, or portfolio actions to a simulated Climate Risk Committee.
+   Select and defend a feasible candidate strategy using the model outputs, while clearly stating assumptions, simulation uncertainty, and limitations to the scope of the decision.
 
 ## 5. Dataset and Known Data-Generating Process
 
@@ -167,38 +169,23 @@ Only variables required for the core learning objectives are included. Additiona
 
 ### 5.2 Instructor-only data-generating process
 
-The synthetic data will be generated from a documented process stored in the instructor materials. The exact coefficients are hidden from students but known to the instructor so that expected actuarial relationships are intentional and reproducible.
+The synthetic data are generated by a documented instructor-only process with a fixed random seed and explicit parameter settings. The V2 proposal intentionally describes that process at the level required for teaching design; the generator, data dictionary, student notebook, and solution notebook will contain the exact implemented equations and parameter values so that the proposal does not state relationships that differ from the released simulation.
 
-The frequency component will follow a structure such as:
+The generator separates three concepts that students must not conflate:
 
-$$
-N_i \sim \text{Poisson or Negative Binomial}(\lambda_i)
-$$
+1. **policy-location-year exposure and environmental state**;
+2. **claim occurrence/frequency during that exposure period**; and
+3. **individual claim severity**, generated only when a claim occurs.
 
-with
+Claim frequency is therefore generated at the policy-location-year level using an exposure-aware count mechanism. Environmental and portfolio variables affect frequency through the implemented trigger/risk structure rather than through an illustrative equation that is not identical to the released code.
 
-$$ \log(\lambda_i) = \log(\text{Exposure}_i) + \beta_0 + \beta_{\text {occupancy}} + \beta_{\text{air}} + \beta_{\text{water}} + \beta_{\text{compound}} + \beta_{\text{climate}} + \beta_{\text{mitigation}}. $$
+For each simulated claim, a positive ground-up severity is generated at the **claim level**. Claim-level losses are then processed through the applicable deductible and policy limit and aggregated back to the policy-location-year and portfolio levels. This preserves the distinction between conditional claim severity, aggregate ground-up loss, and aggregate insurer-paid loss.
 
-The severity component, conditional on a claim, will use a positive continuous distribution such as Gamma or Lognormal:
+The implemented DGP is designed so that the synthetic portfolio exhibits intentional actuarial relationships, including occupancy differences, environmental stress effects, mitigation effects, and sufficient random variation that the intended conclusions are not visually predetermined from the raw data. Exact coefficients and distributional choices are documented in the instructor materials rather than inferred by students from this proposal.
 
-$$
-X_i \mid N_i>0 \sim \text{Gamma or Lognormal}
-$$
+The compound scenario is also described conservatively. Air and water pathways are stressed together, but the core simulator does **not** claim to reproduce all physical or statistical dependence between the hazards. Unless an explicit dependence term is included in the released V2 generator, the air- and water-related stochastic components are treated as **conditionally independent given the modelled portfolio, environmental, and scenario inputs**. Shared inputs can therefore move both pathways at the same time, but unmodelled residual dependence is outside the core case.
 
-with expected severity driven by insured value, occupancy, event type, and mitigation status.
-
-Policy deductibles and limits are then applied to simulated ground-up losses to generate insurer-paid losses.
-
-The data-generating process will intentionally include:
-
-- higher claim frequency under air stress;
-- higher claim frequency and/or severity under water stress;
-- a non-zero compound air–water interaction;
-- occupancy differences;
-- mitigation effects that reduce expected and/or tail loss; and
-- enough random variation that the correct conclusions are not visually obvious from raw data.
-
-A fixed random seed and full generation script will be supplied in the instructor package so that the dataset is completely reproducible.
+A fixed seed, reproducible generation script, data dictionary, and instructor documentation are included in the classroom package so that the released dataset can be recreated and the assumptions can be inspected.
 
 ## 6. Four Core Scenarios
 
@@ -234,7 +221,7 @@ Both stresses occur together.
 
 Students compare the compound portfolio result with the standalone scenarios and examine whether the combination materially changes expected loss, premium adequacy, and tail risk.
 
-The core case does not require copula modelling or advanced spatial dependence. The dependence embedded in the synthetic scenario is handled through the instructor-defined data-generating process and scenario simulation. Copulas, spatial modelling, and alternative dependence structures are optional advanced modules.
+The core case does not require copula modelling or advanced spatial dependence. In V2, the compound scenario is interpreted as a **joint stress test of both modelled pathways**, not as evidence that the simulator captures every form of air–water dependence. Unless dependence is explicitly parameterized in the released generator, residual air- and water-related stochastic components are conditionally independent given the modelled inputs. Copulas, spatial dependence, and alternative dependence structures are therefore optional advanced extensions and useful sensitivity analyses.
 
 ## 7. Actuarial Mechanics Required in the Core Case
 
@@ -304,7 +291,7 @@ The comparison focuses on how stress affects both the center and the tail of the
 
 ### 7.7 Financial value of mitigation
 
-Each mitigation option has a fixed implementation cost and an instructor-defined effect on frequency and/or severity.
+Each mitigation option has a defined implementation cost and an instructor-defined effect on frequency and/or severity.
 
 Students report:
 
@@ -315,27 +302,46 @@ Students report:
 - reduction in TVaR; and
 - post-mitigation premium adequacy.
 
-The primary decision is not based only on the expected-loss-reduction-to-cost ratio.
+The primary decision is not based only on the expected-loss-reduction-to-cost ratio. Students evaluate a **finite set of candidate mitigation portfolios** under the Climate Resilience Budget and identify the feasible candidate with the lowest estimated TVaR at the chosen confidence level.
 
-Instead, teams solve a constrained portfolio decision:
-
-$$
-\min TVaR_{99}
-$$
-
-subject to
+For candidate portfolio $ \(j\) $,
 
 $$
-\sum_i \text{Mitigation Cost}_i \leq \text{Climate Resilience Budget}.
+j^* = \arg\min_{j \in \mathcal{F}} \widehat{TVaR}_{99,j},
 $$
 
-Expected-loss reduction and benefit-cost ratios are reported as supporting measures. This prevents the exercise from rewarding a mitigation choice that looks efficient on average while leaving severe tail exposure largely unchanged.
+where
 
-## 8. Teaching Structure and Duration
+$$
+\mathcal{F} = \left\{j : \text{Mitigation Cost}_j \leq \text{Climate Resilience Budget}\right\}.
+$$
 
-The full version separates in-class and independent work.
+The conclusion is therefore stated as:
 
-### Full version: approximately 6–7 hours
+> **Select the strategy with the lowest estimated TVaR99 among the feasible candidate portfolios evaluated under the stated budget.**
+
+This is a comparison over the candidate set supplied in the case; it is **not a claim of a globally optimal mitigation portfolio**. Expected-loss reduction and benefit-cost ratios are reported as supporting measures, and Monte Carlo estimates are interpreted with appropriate simulation uncertainty.
+
+## 8. Teaching Structure, Prerequisites, and Duration
+
+### 8.1 Prerequisites
+
+The full case is intended for actuarial students or early-career learners who have:
+
+- introductory probability and statistics;
+- familiarity with insurance loss concepts and basic P&C terminology;
+- basic frequency/severity concepts;
+- introductory regression or GLM exposure;
+- basic Python/Jupyter competence; and
+- a conceptual understanding of simulation and quantiles.
+
+Students do **not** need prior climate-science, environmental-engineering, copula, spatial-statistics, or optimization coursework. Brief definitions and the insurance coverage mechanism are provided inside the case.
+
+For cohorts with weaker coding or modelling prerequisites, the short version uses prepared/prefitted model outputs so that the learning focus remains on actuarial interpretation and decision-making.
+
+### 8.2 Full version: approximately 6–7 hours
+
+The full version is the primary teaching pathway and separates in-class modelling from independent preparation and communication.
 
 | Component | Mode | Time | Main output |
 |---|---|---:|---|
@@ -343,42 +349,44 @@ The full version separates in-class and independent work.
 | Session 1: Insurance setting and baseline | In class | 60 min | Coverage map, descriptive analysis, baseline expectations |
 | Session 2: Frequency, severity and pricing | In class | 75 min | Frequency model, severity model, loss cost, indicated premium |
 | Session 3: Stress testing and tail risk | In class | 75 min | Scenario loss distributions, VaR, TVaR, adequacy comparison |
-| Session 4: Mitigation and committee decision | In class | 60 min | Budget-constrained mitigation decision and recommendation |
+| Session 4: Mitigation and committee decision | In class | 60 min | Candidate-strategy comparison under the budget and recommendation |
 | Final committee memo | Independent | 60–90 min | Short actuarial recommendation with quantitative support |
 
 In-class time: approximately 4.5 hours  
 Independent work: approximately 2–2.5 hours
 
-### One-session version: approximately 2 hours
+### 8.3 Short version: approximately 2 hours
 
-A shorter version will provide pre-fitted frequency and severity models. Students will:
+The short version is a **separate facilitated pathway**, not the full exercise compressed without modification. It uses prepared or pre-fitted frequency and severity results so that students can complete the decision cycle within one session.
 
-1. review the coverage mechanism;
-2. calculate baseline loss cost and indicated premium;
-3. run the four provided scenarios;
-4. compare VaR/TVaR and premium adequacy;
-5. choose mitigation under a fixed budget; and
-6. deliver a short committee recommendation.
+Students:
 
-This version preserves the main actuarial decision insight without requiring full model fitting.
+1. review the coverage mechanism and key assumptions;
+2. interpret baseline loss cost and indicated premium;
+3. run or inspect the four provided scenarios;
+4. compare expected loss, VaR/TVaR, and premium adequacy;
+5. compare the supplied feasible mitigation candidates under the fixed budget; and
+6. deliver a short Climate Risk Committee recommendation.
+
+The short version preserves the hazard-to-covered-loss, stress-testing, tail-risk, and mitigation-decision insights, but it does not assess full model fitting to the same depth as the full version.
 
 ## 9. Mapping to CAS Education and General-Insurance Competencies
 
-The case is intentionally aligned with current CAS general-insurance education rather than using climate risk as a stand-alone environmental topic.
+ClimateTwin is designed around general-insurance competencies that are central to actuarial practice: coverage interpretation, exposure definition, frequency-severity modelling, ratemaking, portfolio risk, risk management, and communication. The mapping below is intended as an **educational alignment**, not a claim that completion of the case substitutes for any particular CAS examination objective.
 
-| Learning objective | General-insurance competency | CAS education connection |
+| Learning objective | General-insurance competency | CAS-relevant connection |
 |---|---|---|
-| Translate hazard into covered loss | Coverage interpretation, exposure definition, actuarial judgment | Supports the practical insurance context required across P&C work and ratemaking exercises |
-| Model exposure-adjusted frequency | Frequency modelling, GLMs, predictive analytics | MAS-II: statistical learning concepts; Exam 8: interpretation/evaluation of classification ratemaking models and GLM-based approaches |
-| Model conditional severity | Severity modelling and loss-cost estimation | Exam 5: loss experience and ratemaking foundations; Exam 8: component models and individual/classification risk pricing |
-| Calculate expected loss cost | Frequency-severity framework, pure premium | Exam 5: basic ratemaking and rate-level indication concepts |
-| Calculate indicated premium | Expense/profit loads, pricing indication | Exam 5: ratemaking, underwriting provisions, and indications |
-| Evaluate premium adequacy | Pricing sufficiency and scenario sensitivity | Exam 5 / Exam 8: pricing and classification/rate adequacy applications |
-| Simulate aggregate loss and calculate VaR/TVaR | Portfolio risk and tail-risk measurement | Exam 9: risk management, risk-adjusted decision-making, and financial risk management |
-| Evaluate mitigation under a budget | Risk reduction, capital-aware decision-making | Exam 9: risk management, cost of risk, risk-adjusted pricing/performance concepts |
-| Present committee recommendation | Professional judgment and communication | Reinforces communication of actuarial results, assumptions, limitations, and business recommendations |
+| Translate hazard into covered loss | Coverage interpretation, exposure definition, actuarial judgment | Connects environmental information to insurance contract triggers, exposure, and covered loss |
+| Model exposure-adjusted frequency | Frequency modelling, GLMs, predictive analytics | Reinforces count modelling, exposure treatment, variable interpretation, and model judgment used in P&C analytics |
+| Model conditional claim severity | Severity modelling and loss-cost estimation | Reinforces claim-level severity, conditional modelling, policy terms, and component-model thinking |
+| Calculate expected loss cost | Frequency-severity framework, pure premium | Applies standard ratemaking logic by combining expected frequency and severity |
+| Calculate indicated premium | Expense/profit loads, pricing indication | Applies transparent premium-indication mechanics and separates expected loss from pricing provisions |
+| Evaluate premium adequacy | Pricing sufficiency and scenario sensitivity | Requires comparison of current and indicated premium under changing assumptions |
+| Simulate aggregate loss and calculate VaR/TVaR | Portfolio risk and tail-risk measurement | Introduces simulation-based risk measurement and the distinction between central and tail outcomes |
+| Evaluate candidate mitigation strategies under a budget | Risk reduction and risk-adjusted decision-making | Compares expected-loss efficiency with tail-risk reduction while respecting a business constraint |
+| Present committee recommendation | Professional judgment and communication | Requires concise communication of results, assumptions, uncertainty, limitations, and recommended action |
 
-The case therefore connects predictive modelling, frequency-severity analysis, ratemaking, portfolio risk, risk management, and professional communication in one classroom exercise.
+The case therefore integrates technical analysis with actuarial judgment. Students are assessed not only on whether they obtain numerical outputs, but also on whether they understand what those outputs mean for an insurance contract and whether they communicate the limits of the model appropriately.
 
 ## 10. Student Workflow and Expected Outputs
 
@@ -446,7 +454,7 @@ Expected output
 8. Which scenario produces the largest change in TVaR?
 9. Does the compound scenario create a materially different portfolio result from considering air and water stresses separately?
 10. Which locations or occupancy groups contribute most to expected loss and which contribute most to tail risk?
-11. Which mitigation set minimizes TVaR while remaining within the resilience budget?
+11. Among the feasible candidate mitigation portfolios evaluated, which has the lowest estimated TVaR while remaining within the resilience budget?
 12. Would the mitigation decision change if the insurer focused only on expected-loss benefit-cost ratio?
 13. After mitigation, should the insurer reprice, change deductibles/limits, restrict capacity, require mitigation, or maintain current terms?
 14. What assumptions or model limitations should be communicated to management?
@@ -468,69 +476,70 @@ A scoring rubric with performance levels will be supplied to instructors.
 
 ## 13. Complete Classroom Package
 
-The submission will be organized as a ready-to-use instructor package rather than a proposal alone.
+ClimateTwin is organized as a ready-to-use classroom package rather than a proposal-only concept. The first package has established the end-to-end teaching workflow; V2 synchronizes each deliverable to the corrected generator, terminology, assumptions, and review requirements.
 
-The minimum package will include:
+The package consists of:
 
 1. Instructor Guide  
-   Teaching objectives, prerequisite knowledge, schedule, classroom flow, model assumptions, data-generating process, common misconceptions, expected results, and discussion notes.
+   Teaching objectives, prerequisite knowledge, schedule, classroom flow, model assumptions, data-generating process, common misconceptions, expected results, discussion prompts, and limitations.
 
 2. Student Case Document  
    Insurance background, policy structure, scenario definitions, tasks, guiding questions, and required deliverables.
 
-3. Synthetic Dataset  
-   Approximately 750 policy-location-year records in CSV, plus a data dictionary.
+3. Synthetic Dataset and Data Dictionary  
+   A compact policy-location-year dataset with documented variable definitions and the fields required for the core exercise.
 
 4. Data-Generation Script  
-   Reproducible instructor-only script with fixed seed and documented hidden relationships.
+   A reproducible instructor-only script with a fixed seed and documented implemented relationships.
 
-5. Ready-to-Run Python Notebook  
-   Data checks, frequency, severity, loss cost, pricing, simulation, VaR/TVaR, scenario comparison, and mitigation analysis.
+5. Student Notebook  
+   Ready-to-run scaffolding for data checks, frequency, severity, loss cost, pricing, simulation, VaR/TVaR, scenario comparison, and candidate mitigation analysis.
 
 6. Solution Notebook  
    Completed calculations, expected outputs, interpretation notes, and instructor checkpoints.
 
 7. Presentation Slides  
-   Short slide deck introducing the insurer, coverage mechanism, four scenarios, and committee challenge.
+   A classroom launch deck introducing AquaAir, the coverage mechanism, four scenarios, and the committee challenge.
 
 8. Assessment Rubric  
-   Scoring criteria for technical work and professional communication.
+   Performance-level criteria for technical work, actuarial interpretation, decision quality, and professional communication.
 
 9. Software and Setup Instructions  
-   Python version, package requirements, Jupyter/Colab instructions, file structure, and a no-install cloud option where feasible.
+   Python/package requirements, Jupyter/Colab instructions, file structure, and troubleshooting guidance.
 
 10. Expected-Output Sheet  
-    Instructor reference containing expected ranges/tables/figures for each stage.
+    Instructor reference containing expected ranges, tables, figures, and checkpoints for each stage.
 
-The interactive dashboard is not required for the minimum viable submission. It will be described only as a future extension unless a stable, tested version is completed before submission.
+The interactive dashboard is **not part of the required core package** and no real-time monitoring capability is implied by the use of the term digital twin. A dashboard may be developed later as an optional interface to the same synthetic scenario engine.
 
 ## 14. Pedagogical Effectiveness and Pilot Validation
 
-The case will be pilot-tested before the final CAS submission with a small group of approximately 4–8 students or recent actuarial learners who have basic statistics and insurance knowledge but have not seen the instructor solution.
+Pilot validation is treated as an empirical check on the teaching material, not as a result to be assumed in advance.
 
-The pilot will record:
+The V2 pilot protocol uses a small group of approximately 4–8 students or recent actuarial learners with the stated prerequisites who have not seen the instructor solution. The pilot records:
 
-- total completion time;
+- actual total completion time;
 - completion rate by stage;
-- questions or instructions that caused confusion;
+- questions or instructions that cause confusion;
 - coding/setup difficulties;
-- whether the dataset was sufficient without instructor intervention;
+- whether the dataset and data dictionary are sufficient without unplanned instructor intervention;
 - errors in distinguishing environmental indicators from insurance triggers;
 - difficulty with frequency-severity modelling;
 - difficulty interpreting VaR/TVaR and premium adequacy;
-- whether students reached the intended insight about expected loss versus tail risk;
+- whether learners distinguish the best evaluated candidate from a claimed global optimum;
+- whether learners recognize the compound-scenario dependence limitation;
 - quality of final insurance recommendations; and
 - specific revisions made after the pilot.
 
-A short pre/post prompt will also be used:
+A short pre/post prompt is used:
 
 Before the case: "Which region do you believe is the insurer's greatest climate risk, and why?"
 
 After the case: "Which part of the portfolio creates the greatest financial/tail risk, and what action should the insurer take?"
 
-The comparison provides simple evidence that students moved from environmental-risk intuition to actuarial-risk reasoning.
+This provides a simple way to assess whether learners move from environmental-risk intuition toward actuarial-risk reasoning.
 
-The final submission's instructor guide will contain a brief Pilot and Revision Note reporting actual participants, completion time, observed difficulties, intended learning outcome achievement, and changes made after testing. No pilot results will be invented; this section will be completed from the actual classroom trial before submission.
+**Pilot-status rule for the final submission:** this proposal does not present planned outcomes as completed evidence. After the actual pilot is conducted, this section and the Instructor Guide's Pilot and Revision Note will be updated with the observed participant count, completion time, difficulties, learning evidence, and changes made. Until those observations exist, no pilot result is reported or invented.
 
 ## 15. Optional Advanced Extensions
 
@@ -554,20 +563,23 @@ This separation keeps the first release teachable while preserving a pathway for
 
 ClimateTwin does not ask students merely to forecast pollution or discuss climate change qualitatively. It asks them to make a P&C actuarial decision from a changing environmental state.
 
-The exercise is innovative because it brings together:
+Its innovation is the integration of:
 
 - a clearly defined commercial insurance contract;
-- air and water quality as emerging climate-linked risk signals;
-- frequency-severity modelling;
+- air and water quality as climate-linked risk signals;
+- exposure-aware frequency modelling;
+- claim-level conditional severity modelling;
 - ratemaking;
 - aggregate simulation;
 - tail-risk measurement;
-- stress testing;
+- transparent stress testing;
 - mitigation economics; and
 - professional insurance decision-making.
 
-At the same time, the scope is intentionally controlled. Students work with one portfolio, one coverage architecture, one compact synthetic dataset, four scenarios, and one decision framework.
+The term **ClimateTwin** describes the pedagogical scenario simulator: a reproducible synthetic representation of one insurer portfolio under alternative environmental and mitigation states. The core tool does not claim live-data ingestion, continuous calibration, physical-system replication, or exhaustive hazard dependence.
 
-The central learning message is: Environmental severity is not the same as insurance severity. Actuarial climate-risk management requires translating hazard into covered loss, quantifying the full loss distribution, testing premium adequacy, and deciding how pricing and mitigation should change before losses materialize.
+The scope is intentionally controlled. Students work with one portfolio, one coverage architecture, one compact synthetic dataset, four scenarios, and a finite set of candidate mitigation strategies. Their mitigation conclusion is correspondingly bounded: they identify the feasible **evaluated candidate** with the lowest estimated TVaR, rather than claiming to solve an unrestricted global optimization problem.
 
-ClimateTwin is therefore designed to be innovative enough to expose students to an emerging area of actuarial work, but concrete enough to be run, assessed, reproduced, and improved in an ordinary actuarial classroom.
+The central learning message is: Environmental severity is not the same as insurance severity. Actuarial climate-risk management requires translating hazard into covered loss, quantifying the loss distribution, testing premium adequacy, comparing feasible interventions, and communicating what the model does and does not establish.
+
+ClimateTwin is therefore designed to be innovative enough to expose students to an emerging area of actuarial work, while remaining concrete enough to run, assess, reproduce, critique, and improve in an ordinary actuarial classroom.
